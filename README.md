@@ -1,5 +1,7 @@
 # Svelte + Vite
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/7b8e79cd-8eff-403a-a77a-4e1e12b76b65/deploy-status)](https://app.netlify.com/projects/puic/deploys)
+
 This template should help get you started developing with Svelte in Vite.
 
 ## Recommended IDE Setup
