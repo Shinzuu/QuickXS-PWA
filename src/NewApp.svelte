@@ -3,6 +3,7 @@
   import { loadCachedData, fetchAllData, isLoading, todayClasses } from './lib/store'
   import { requestNotificationPermission, scheduleClassNotifications } from './lib/notifications'
   import { currentTheme } from './lib/themeStore'
+  import { initWidgetService } from './lib/widgetService'
   import HeroCard from './components/HeroCard.svelte'
   import TodayClasses from './components/TodayClasses.svelte'
   import EventsTimeline from './components/EventsTimeline.svelte'
@@ -23,6 +24,9 @@
 
     // Then fetch fresh data from Supabase
     await fetchAllData()
+
+    // Initialize widget service for PWA widgets
+    initWidgetService()
 
     // Request notification permission after a short delay
     setTimeout(async () => {

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Current Class Widget</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #222831 0%, #393E46 100%);
+      color: white;
+      padding: 16px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .widget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .widget-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #00ADB5;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .status-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 12px;
+      animation: pulse 2s infinite;
+    }
+
+    .status-now {
+      background: rgba(255, 107, 107, 0.3);
+      color: #FF6B6B;
+      box-shadow: 0 0 20px rgba(255, 107, 107, 0.4);
+    }
+
+    .status-next {
+      background: rgba(0, 173, 181, 0.3);
+      color: #00ADB5;
+    }
+
+    .class-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .subject {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .detail-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .icon {
+      width: 14px;
+      height: 14px;
+      opacity: 0.6;
+    }
+
+    .widget-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .time-display {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .countdown {
+      font-size: 14px;
+      font-weight: 600;
+      color: #00ADB5;
+    }
+
+    .no-class {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .no-class-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    .no-class-text {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.6;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="widget-header">
+    <div class="widget-title">QuickXS</div>
+    <div class="status-badge" id="status-badge">LOADING</div>
+  </div>
+
+  <div class="class-info" id="class-info">
+    <div class="no-class">
+      <div class="no-class-icon">📚</div>
+      <div class="no-class-text">Loading...</div>
+    </div>
+  </div>
+
+  <div class="widget-footer" id="widget-footer" style="display: none;">
+    <div class="time-display" id="time-display"></div>
+    <div class="countdown" id="countdown"></div>
+  </div>
+
+  <script>
+    async function fetchWidgetData() {
+      try {
+        const response = await fetch('/widget-data.json');
+        const data = await response.json();
+        updateWidget(data);
+      } catch (error) {
+        console.error('Failed to fetch widget data:', error);
+        showNoClass('Failed to load');
+      }
+    }
+
+    function updateWidget(data) {
+      const { currentClass, nextClass } = data;
+      const classToShow = currentClass || nextClass;
+
+      if (!classToShow) {
+        showNoClass('No classes today! 🎉');
+        return;
+      }
+
+      const statusBadge = document.getElementById('status-badge');
+      const classInfo = document.getElementById('class-info');
+      const footer = document.getElementById('widget-footer');
+      const timeDisplay = document.getElementById('time-display');
+      const countdown = document.getElementById('countdown');
+
+      // Update status badge
+      if (currentClass) {
+        statusBadge.textContent = 'NOW';
+        statusBadge.className = 'status-badge status-now';
+      } else {
+        statusBadge.textContent = 'NEXT';
+        statusBadge.className = 'status-badge status-next';
+      }
+
+      // Update class info
+      classInfo.innerHTML = `
+        <div class="subject">${classToShow.subject}</div>
+        <div class="details">
+          <div class="detail-row">
+            <span>⏰</span>
+            <span>${classToShow.time}</span>
+          </div>
+          <div class="detail-row">
+            <span>👨‍🏫</span>
+            <span>${classToShow.teacher}</span>
+          </div>
+          <div class="detail-row">
+            <span>📍</span>
+            <span>${classToShow.classroom}</span>
+          </div>
+        </div>
+      `;
+
+      // Update footer
+      footer.style.display = 'flex';
+      const now = new Date();
+      timeDisplay.textContent = now.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      if (classToShow.minutesUntil !== undefined) {
+        if (classToShow.minutesUntil < 0) {
+          countdown.textContent = `${Math.abs(classToShow.minutesUntil)}m elapsed`;
+        } else {
+          countdown.textContent = `in ${classToShow.minutesUntil}m`;
+        }
+      }
+    }
+
+    function showNoClass(message) {
+      const classInfo = document.getElementById('class-info');
+      const footer = document.getElementById('widget-footer');
+      const statusBadge = document.getElementById('status-badge');
+
+      statusBadge.textContent = 'FREE';
+      statusBadge.className = 'status-badge status-next';
+
+      classInfo.innerHTML = `
+        <div class="no-class">
+          <div class="no-class-icon">✨</div>
+          <div class="no-class-text">${message}</div>
+        </div>
+      `;
+
+      footer.style.display = 'none';
+    }
+
+    // Initial fetch
+    fetchWidgetData();
+
+    // Refresh every 1 minute
+    setInterval(fetchWidgetData, 60000);
+  </script>
+</body>
+</html>

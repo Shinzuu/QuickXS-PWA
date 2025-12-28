@@ -150,6 +150,37 @@ export function isEventUrgent(dateStr) {
 }
 
 /**
+ * Parse time string to Date object (today at that time)
+ */
+export function parseTime(timeStr) {
+  const [hours, minutes] = timeStr.split(':').map(Number)
+  const date = new Date()
+  date.setHours(hours, minutes, 0, 0)
+  return date
+}
+
+/**
+ * Check if a date is today
+ */
+export function isToday(date) {
+  const today = new Date()
+  return date.getDate() === today.getDate() &&
+         date.getMonth() === today.getMonth() &&
+         date.getFullYear() === today.getFullYear()
+}
+
+/**
+ * Check if a date is tomorrow
+ */
+export function isTomorrow(date) {
+  const tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  return date.getDate() === tomorrow.getDate() &&
+         date.getMonth() === tomorrow.getMonth() &&
+         date.getFullYear() === tomorrow.getFullYear()
+}
+
+/**
  * Find free periods between classes (gaps > 60 minutes)
  */
 export function findFreePeriods(classes) {

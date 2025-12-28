@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Next Event Widget</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #2d3561 0%, #1a1f3a 100%);
+      color: white;
+      padding: 16px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .widget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .widget-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #4FC3F7;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .event-type-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 12px;
+      background: rgba(79, 195, 247, 0.3);
+      color: #4FC3F7;
+    }
+
+    .event-type-badge.urgent {
+      background: rgba(255, 107, 107, 0.3);
+      color: #FF6B6B;
+      animation: pulse 2s infinite;
+    }
+
+    .event-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .event-name {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .event-details {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .countdown-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      margin-top: 8px;
+    }
+
+    .countdown-icon {
+      font-size: 20px;
+    }
+
+    .countdown-text {
+      flex: 1;
+    }
+
+    .countdown-label {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .countdown-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #4FC3F7;
+    }
+
+    .no-events {
+      text-align: center;
+      padding: 30px 20px;
+    }
+
+    .no-events-icon {
+      font-size: 40px;
+      margin-bottom: 8px;
+      opacity: 0.5;
+    }
+
+    .no-events-text {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.6;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="widget-header">
+    <div class="widget-title">Upcoming Event</div>
+    <div class="event-type-badge" id="event-type">LOADING</div>
+  </div>
+
+  <div class="event-info" id="event-info">
+    <div class="no-events">
+      <div class="no-events-icon">📅</div>
+      <div class="no-events-text">Loading events...</div>
+    </div>
+  </div>
+
+  <script>
+    async function fetchWidgetData() {
+      try {
+        const response = await fetch('/widget-data.json');
+        const data = await response.json();
+        updateWidget(data);
+      } catch (error) {
+        console.error('Failed to fetch widget data:', error);
+        showNoEvents('Failed to load events');
+      }
+    }
+
+    function updateWidget(data) {
+      const { upcomingEvents = [] } = data;
+
+      if (upcomingEvents.length === 0) {
+        showNoEvents('No upcoming events 🎉');
+        return;
+      }
+
+      const event = upcomingEvents[0];
+      const eventType = document.getElementById('event-type');
+      const eventInfo = document.getElementById('event-info');
+
+      // Update event type badge
+      eventType.textContent = event.event_type || 'Event';
+      eventType.className = 'event-type-badge';
+
+      if (event.daysUntil !== undefined && event.daysUntil <= 2) {
+        eventType.classList.add('urgent');
+      }
+
+      // Calculate countdown
+      let countdownText = '';
+      if (event.daysUntil === 0) {
+        countdownText = 'Today';
+      } else if (event.daysUntil === 1) {
+        countdownText = 'Tomorrow';
+      } else if (event.daysUntil !== undefined) {
+        countdownText = `${event.daysUntil} days`;
+      }
+
+      // Update event info
+      eventInfo.innerHTML = `
+        <div class="event-name">${event.name}</div>
+        ${event.info ? `<div class="event-details">${event.info}</div>` : ''}
+        <div class="countdown-container">
+          <div class="countdown-icon">⏰</div>
+          <div class="countdown-text">
+            <div class="countdown-label">Time until event</div>
+            <div class="countdown-value">${countdownText}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function showNoEvents(message) {
+      const eventType = document.getElementById('event-type');
+      const eventInfo = document.getElementById('event-info');
+
+      eventType.textContent = 'NONE';
+      eventType.className = 'event-type-badge';
+
+      eventInfo.innerHTML = `
+        <div class="no-events">
+          <div class="no-events-icon">✨</div>
+          <div class="no-events-text">${message}</div>
+        </div>
+      `;
+    }
+
+    // Initial fetch
+    fetchWidgetData();
+
+    // Refresh every 1 minute
+    setInterval(fetchWidgetData, 60000);
+  </script>
+</body>
+</html>
