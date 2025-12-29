@@ -112,7 +112,35 @@
           tabindex="0"
           aria-label="View details for {event.name}"
         >
-          <div class="grid grid-cols-[auto,minmax(180px,1fr),auto,auto,auto,1fr,auto] items-center gap-3">
+          <!-- Mobile Layout (< 768px) -->
+          <div class="md:hidden">
+            <div class="flex items-start gap-3 mb-2">
+              <span class="text-2xl" aria-hidden="true">
+                {getEventTypeIcon(event.event_type)}
+              </span>
+              <div class="flex-1">
+                <h3 class="font-bold text-base mb-1">{event.name}</h3>
+                <div class="flex flex-wrap gap-2 text-sm opacity-90">
+                  <span>📅 {formatDate(event.date)}</span>
+                  <span>⏰ {formatTime(event.time)}</span>
+                </div>
+              </div>
+              {#if urgent}
+                <span class="text-xs bg-red-600 text-white px-2 py-1 rounded-full whitespace-nowrap">
+                  Urgent
+                </span>
+              {/if}
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <span class="font-semibold">{formatCountdown(daysUntil)}</span>
+              {#if event.info}
+                <p class="opacity-70 truncate flex-1 ml-3">{event.info}</p>
+              {/if}
+            </div>
+          </div>
+
+          <!-- Desktop Layout (>= 768px) -->
+          <div class="hidden md:grid grid-cols-[auto,minmax(180px,1fr),auto,auto,auto,1fr,auto] items-center gap-3">
             <!-- Event Icon -->
             <span class="text-xl" aria-hidden="true">
               {getEventTypeIcon(event.event_type)}
