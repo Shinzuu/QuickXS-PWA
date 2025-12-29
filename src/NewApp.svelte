@@ -212,11 +212,6 @@
     animation: spin 1s linear infinite;
   }
 
-  .hover-cyan:hover {
-    color: #00ADB5 !important;
-    opacity: 1 !important;
-  }
-
   .card-container {
     transition: all 0.3s ease;
   }
