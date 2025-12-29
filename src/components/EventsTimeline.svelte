@@ -1,6 +1,6 @@
 <script>
   import { upcomingEvents } from '../lib/store'
-  import { getDaysUntil, formatDate, formatCountdown, isEventUrgent } from '../lib/utils'
+  import { getDaysUntil, formatDate, formatCountdown, isEventUrgent, formatTime } from '../lib/utils'
 
   let showAll = $state(false)
   let filterType = $state('all') // 'all', 'CT', 'Mid', 'Assignment', 'Lab'
@@ -33,7 +33,7 @@
   }
 
   async function shareEvent(event) {
-    const text = `${event.name}\n${formatDate(event.date)} at ${event.time}\n${event.info || ''}`
+    const text = `${event.name}\n${formatDate(event.date)} at ${formatTime(event.time)}\n${event.info || ''}`
 
     if (navigator.share) {
       try {
@@ -134,7 +134,7 @@
             <span class="text-sm opacity-90 whitespace-nowrap">📅 {formatDate(event.date)}</span>
 
             <!-- Time -->
-            <span class="text-sm opacity-90 whitespace-nowrap">⏰ {event.time}</span>
+            <span class="text-sm opacity-90 whitespace-nowrap">⏰ {formatTime(event.time)}</span>
 
             <!-- Countdown -->
             <span class="font-semibold text-sm whitespace-nowrap">{formatCountdown(daysUntil)}</span>
