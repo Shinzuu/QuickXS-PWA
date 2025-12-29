@@ -1,0 +1,38 @@
+{
+  "packageId": "app.netlify.puic.twa",
+  "host": "puic.netlify.app",
+  "name": "QuickXS",
+  "launcherName": "QuickXS",
+  "display": "standalone",
+  "themeColor": "#00ADB5",
+  "navigationColor": "#222831",
+  "navigationColorDark": "#222831",
+  "navigationDividerColor": "#00ADB5",
+  "navigationDividerColorDark": "#00ADB5",
+  "backgroundColor": "#222831",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://puic.netlify.app/icon-512.png",
+  "maskableIconUrl": "https://puic.netlify.app/icon-512.png",
+  "monochromeIconUrl": "https://puic.netlify.app/icon-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "android"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://puic.netlify.app/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "minSdkVersion": 21,
+  "targetSdkVersion": 34
+}
