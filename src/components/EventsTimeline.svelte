@@ -4,6 +4,8 @@
 
   let showAll = $state(false)
   let filterType = $state('all') // 'all', 'CT', 'Mid', 'Assignment', 'Lab'
+  let selectedEvent = $state(null)
+  let showModal = $state(false)
   const maxInitial = 10
 
   let filteredEvents = $derived(filterType === 'all'
@@ -56,6 +58,16 @@
     } catch (err) {
       console.error('Failed to copy:', err)
     }
+  }
+
+  function openEventModal(event) {
+    selectedEvent = event
+    showModal = true
+  }
+
+  function closeModal() {
+    showModal = false
+    selectedEvent = null
   }
 </script>
 
@@ -119,7 +131,12 @@
         {@const urgent = isEventUrgent(event.date)}
 
         <div
-          class="event-card p-3 rounded-lg border transition-all {getEventTypeColor(event.event_type, daysUntil)}"
+          class="event-card p-3 rounded-lg border transition-all cursor-pointer {getEventTypeColor(event.event_type, daysUntil)}"
+          onclick={() => openEventModal(event)}
+          onkeydown={(e) => e.key === 'Enter' && openEventModal(event)}
+          role="button"
+          tabindex="0"
+          aria-label="View details for {event.name}"
         >
           <div class="grid grid-cols-[auto,minmax(180px,1fr),auto,auto,auto,1fr,auto] items-center gap-3">
             <!-- Event Icon -->
@@ -155,7 +172,7 @@
               {/if}
 
               <button
-                onclick={() => shareEvent(event)}
+                onclick={(e) => { e.stopPropagation(); shareEvent(event); }}
                 class="p-2 hover:bg-gray-700 rounded-lg transition-colors"
                 aria-label="Share event"
                 title="Share event"
@@ -189,6 +206,122 @@
     </div>
   {/if}
 </div>
+
+<!-- Event Detail Modal -->
+{#if showModal && selectedEvent}
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    onclick={closeModal}
+    onkeydown={(e) => e.key === 'Escape' && closeModal()}
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="event-modal-title"
+  >
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+
+    <!-- Modal Content -->
+    <div
+      class="relative z-10 w-full max-w-lg rounded-2xl p-6 shadow-2xl"
+      style="background-color: var(--color-card);"
+      onclick={(e) => e.stopPropagation()}
+      onkeydown={(e) => e.stopPropagation()}
+    >
+      <!-- Header -->
+      <div class="flex items-start justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <span class="text-3xl">{getEventTypeIcon(selectedEvent.event_type)}</span>
+          <div>
+            <h2 id="event-modal-title" class="text-2xl font-bold" style="color: var(--color-text);">
+              {selectedEvent.name}
+            </h2>
+            <span class="text-sm px-2 py-1 rounded-full inline-block mt-1" style="background-color: var(--color-accent); color: var(--color-bg);">
+              {selectedEvent.event_type}
+            </span>
+          </div>
+        </div>
+        <button
+          onclick={closeModal}
+          class="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+          aria-label="Close modal"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Details -->
+      <div class="space-y-4">
+        <!-- Date & Time -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex items-center gap-2 p-3 rounded-lg" style="background-color: var(--color-bg);">
+            <span class="text-2xl">📅</span>
+            <div>
+              <p class="text-xs opacity-70" style="color: var(--color-text);">Date</p>
+              <p class="font-semibold" style="color: var(--color-text);">
+                {new Date(selectedEvent.date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })}
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 p-3 rounded-lg" style="background-color: var(--color-bg);">
+            <span class="text-2xl">⏰</span>
+            <div>
+              <p class="text-xs opacity-70" style="color: var(--color-text);">Time</p>
+              <p class="font-semibold" style="color: var(--color-text);">{formatTime(selectedEvent.time)}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Countdown -->
+        {@const daysUntil = getDaysUntil(selectedEvent.date)}
+        <div class="p-3 rounded-lg text-center" style="background-color: var(--color-accent); color: var(--color-bg);">
+          <p class="text-sm font-semibold">Time Remaining</p>
+          <p class="text-2xl font-bold">{formatCountdown(daysUntil)}</p>
+        </div>
+
+        <!-- Priority -->
+        {#if selectedEvent.priority}
+          <div class="flex items-center gap-2 p-3 rounded-lg" style="background-color: var(--color-bg);">
+            <span class="text-2xl">
+              {selectedEvent.priority === 'urgent' ? '🔴' : selectedEvent.priority === 'high' ? '🟡' : '🟢'}
+            </span>
+            <div>
+              <p class="text-xs opacity-70" style="color: var(--color-text);">Priority</p>
+              <p class="font-semibold capitalize" style="color: var(--color-text);">{selectedEvent.priority}</p>
+            </div>
+          </div>
+        {/if}
+
+        <!-- Info -->
+        {#if selectedEvent.info}
+          <div class="p-4 rounded-lg" style="background-color: var(--color-bg);">
+            <p class="text-xs opacity-70 mb-2" style="color: var(--color-text);">Additional Information</p>
+            <p class="whitespace-pre-wrap" style="color: var(--color-text);">{selectedEvent.info}</p>
+          </div>
+        {/if}
+
+        <!-- Actions -->
+        <div class="flex gap-2 pt-2">
+          <button
+            onclick={() => shareEvent(selectedEvent)}
+            class="flex-1 py-3 px-4 rounded-lg font-semibold transition-all hover:opacity-90"
+            style="background-color: var(--color-accent); color: var(--color-bg);"
+          >
+            📤 Share Event
+          </button>
+          <button
+            onclick={closeModal}
+            class="py-3 px-4 rounded-lg font-semibold transition-all hover:opacity-90"
+            style="background-color: var(--color-bg); color: var(--color-text);"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+{/if}
 
 <style>
   .event-card {
