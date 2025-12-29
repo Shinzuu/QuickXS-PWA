@@ -19,7 +19,14 @@
 
 <!-- Theme Menu -->
 {#if showThemeMenu}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4" onclick={() => showThemeMenu = false}>
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    onclick={() => showThemeMenu = false}
+    onkeydown={(e) => e.key === 'Escape' && (showThemeMenu = false)}
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="theme-menu-title"
+  >
     <div class="absolute inset-0" style="background-color: rgba(0, 0, 0, 0.7);"></div>
 
     <div
@@ -27,7 +34,7 @@
       style="background-color: #393E46; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);"
       onclick={(e) => e.stopPropagation()}
     >
-      <h2 class="text-2xl font-bold mb-4" style="color: #00ADB5;">Choose Your Theme</h2>
+      <h2 id="theme-menu-title" class="text-2xl font-bold mb-4" style="color: #00ADB5;">Choose Your Theme</h2>
 
       <div class="grid grid-cols-2 gap-3">
         {#each Object.entries(themes) as [key, theme]}
@@ -42,6 +49,8 @@
               border: 3px solid {$currentThemeName === key ? theme.accent : 'transparent'};
               box-shadow: {$currentThemeName === key ? `0 0 0 2px ${theme.accent}40` : 'none'};
             "
+            aria-label="Select {theme.name} theme"
+            aria-pressed={$currentThemeName === key}
           >
             <div class="flex flex-col items-center gap-2">
               <!-- Theme Preview -->

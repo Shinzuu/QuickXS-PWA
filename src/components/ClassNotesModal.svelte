@@ -46,6 +46,10 @@
     class="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4"
     style="background-color: rgba(0, 0, 0, 0.7);"
     onclick={handleClose}
+    onkeydown={(e) => e.key === 'Escape' && handleClose()}
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="notes-modal-title"
   >
     <div
       class="modal-content rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
@@ -55,7 +59,7 @@
       <!-- Header -->
       <div class="flex items-center justify-between mb-6">
         <div>
-          <h2 class="text-2xl font-bold" style="color: {$currentTheme.accent};">
+          <h2 id="notes-modal-title" class="text-2xl font-bold" style="color: {$currentTheme.accent};">
             {classItem.subject}
           </h2>
           <p class="text-sm opacity-70 mt-1">

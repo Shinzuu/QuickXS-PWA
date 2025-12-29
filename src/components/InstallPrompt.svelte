@@ -47,6 +47,11 @@
   function handleDismiss() {
     showInstallPrompt = false
     dismissed = true
+  }
+
+  function handleDontAskAgain() {
+    showInstallPrompt = false
+    dismissed = true
     localStorage.setItem('installPromptDismissed', 'true')
   }
 </script>
@@ -77,21 +82,33 @@
           Add QuickXS to your home screen for quick access and offline support!
         </p>
 
-        <div class="flex gap-2">
+        <div class="flex flex-col gap-2">
           <button
             onclick={handleInstall}
-            class="flex-1 py-2 px-4 rounded-lg font-semibold transition-all hover:scale-105"
+            class="w-full py-2 px-4 rounded-lg font-semibold transition-all hover:scale-105"
             style="background-color: #00ADB5; color: #222831; box-shadow: 0 2px 8px rgba(0, 173, 181, 0.4);"
+            aria-label="Install QuickXS PWA"
           >
             Install Now
           </button>
-          <button
-            onclick={handleDismiss}
-            class="px-4 py-2 rounded-lg font-semibold transition-colors"
-            style="background-color: #222831; color: #EEEEEE; border: 2px solid #393E46;"
-          >
-            Later
-          </button>
+          <div class="flex gap-2">
+            <button
+              onclick={handleDismiss}
+              class="flex-1 px-4 py-2 rounded-lg font-semibold transition-colors"
+              style="background-color: #222831; color: #EEEEEE; border: 2px solid #393E46;"
+              aria-label="Remind me later"
+            >
+              Later
+            </button>
+            <button
+              onclick={handleDontAskAgain}
+              class="flex-1 px-4 py-2 rounded-lg font-semibold transition-colors"
+              style="background-color: #222831; color: #EEEEEE; border: 2px solid #393E46;"
+              aria-label="Don't ask again"
+            >
+              Don't Ask Again
+            </button>
+          </div>
         </div>
       </div>
     </div>

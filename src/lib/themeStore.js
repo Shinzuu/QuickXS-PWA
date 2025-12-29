@@ -7,6 +7,7 @@ export const themes = {
     card: '#393E46',
     accent: '#00ADB5',
     text: '#EEEEEE',
+    textSecondary: '#B0B0B0',
     isDark: true
   },
   ocean: {
@@ -15,6 +16,7 @@ export const themes = {
     card: '#2d3561',
     accent: '#4FC3F7',
     text: '#E3F2FD',
+    textSecondary: '#B0C4DE',
     isDark: true
   },
   forest: {
@@ -23,6 +25,7 @@ export const themes = {
     card: '#2d4a2d',
     accent: '#66BB6A',
     text: '#E8F5E9',
+    textSecondary: '#C8E6C9',
     isDark: true
   },
   sunset: {
@@ -31,6 +34,7 @@ export const themes = {
     card: '#4a2d35',
     accent: '#FF6B9D',
     text: '#FFE5EC',
+    textSecondary: '#FFB3C6',
     isDark: true
   },
   royal: {
@@ -39,6 +43,7 @@ export const themes = {
     card: '#352d4a',
     accent: '#9575CD',
     text: '#EDE7F6',
+    textSecondary: '#D1C4E9',
     isDark: true
   },
   amber: {
@@ -47,14 +52,16 @@ export const themes = {
     card: '#4a3d2a',
     accent: '#FFB74D',
     text: '#FFF8E1',
+    textSecondary: '#FFECB3',
     isDark: true
   },
   light: {
     name: 'Light Mode',
     bg: '#F5F5F5',
     card: '#FFFFFF',
-    accent: '#00ADB5',
-    text: '#222831',
+    accent: '#00897B',
+    text: '#1A1A1A',
+    textSecondary: '#5A5A5A',
     isDark: false
   }
 }
@@ -91,6 +98,7 @@ export function applyThemeToDocument(theme) {
   document.documentElement.style.setProperty('--color-card', theme.card)
   document.documentElement.style.setProperty('--color-accent', theme.accent)
   document.documentElement.style.setProperty('--color-text', theme.text)
+  document.documentElement.style.setProperty('--color-text-secondary', theme.textSecondary)
 }
 
 // Apply saved theme on load
