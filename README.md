@@ -1,49 +1,116 @@
-# Svelte + Vite
+# QuickXS PWA - Student Schedule Manager
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/7b8e79cd-8eff-403a-a77a-4e1e12b76b65/deploy-status)](https://app.netlify.com/projects/puic/deploys)
+[![Build Check](https://github.com/Shinzuu/QuickXS-PWA/actions/workflows/build-check.yml/badge.svg)](https://github.com/Shinzuu/QuickXS-PWA/actions/workflows/build-check.yml)
 
-This template should help get you started developing with Svelte in Vite.
+**Live App**: [https://puic.netlify.app](https://puic.netlify.app)
 
-## Recommended IDE Setup
+A modern Progressive Web App for managing class schedules, events, and study resources.
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+## ✨ Features
 
-## Need an official Svelte framework?
+- 📅 **Class Schedule** - View your weekly timetable
+- 🎯 **Events Timeline** - Track assignments, quizzes, and deadlines
+- 🔗 **Study Links** - Organize learning resources
+- 🎨 **7 Themes** - Choose your style (Midnight, Ocean, Forest, etc.)
+- 📱 **PWA** - Install on any device, works offline
+- ⚡ **Fast** - 80KB bundle size (gzipped)
+- 🔐 **Admin Panel** - Manage content from web browser
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+## 🚀 Quick Start
 
-## Technical considerations
-
-**Why use this over SvelteKit?**
-
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
-
-This template contains as little as possible to get started with Vite + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
-
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
-
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
-
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
-
-**Why include `.vscode/extensions.json`?**
-
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `checkJs` in the JS template?**
-
-It is likely that most cases of changing variable types in runtime are likely to be accidental, rather than deliberate. This provides advanced typechecking out of the box. Should you like to take advantage of the dynamically-typed nature of JavaScript, it is trivial to change the configuration.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/sveltejs/svelte-hmr/tree/master/packages/svelte-hmr#preservation-of-local-state).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```js
-// store.js
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+### Installation
+```bash
+npm install
 ```
+
+### Development
+```bash
+npm run dev
+```
+Visit http://localhost:5173
+
+### Build
+```bash
+npm run build
+```
+
+### Admin Panel
+Visit `/admin/login` to manage classes, events, and links.
+
+Setup guide: [ADMIN_SETUP_GUIDE.md](./ADMIN_SETUP_GUIDE.md)
+
+## 📱 Android App
+
+Build an Android APK using TWA:
+
+```bash
+# Option 1: PWABuilder (easiest)
+Visit https://www.pwabuilder.com/
+Enter: https://puic.netlify.app
+Generate APK
+
+# Option 2: Local build
+npx bubblewrap build
+```
+
+Full guide: [TWA_BUILD_GUIDE.md](./TWA_BUILD_GUIDE.md)
+
+## 🏗️ Tech Stack
+
+- **Frontend**: Svelte 5 (Runes mode)
+- **Build**: Vite
+- **Styling**: TailwindCSS
+- **Database**: Supabase (PostgreSQL)
+- **Deployment**: Netlify (auto-deploy)
+- **PWA**: Vite PWA Plugin
+
+## 📊 Build Status
+
+The project includes automated build checks on every push. If a build fails, you'll see it in:
+- GitHub Actions tab (red X)
+- Build badge above (will show "failing")
+- Netlify deploy status
+
+Build size: ~80KB gzipped ⭐
+
+## 📚 Documentation
+
+- [PROJECT_STATUS.md](./PROJECT_STATUS.md) - Complete project status
+- [ADMIN_SETUP_GUIDE.md](./ADMIN_SETUP_GUIDE.md) - Admin panel setup
+- [TWA_BUILD_GUIDE.md](./TWA_BUILD_GUIDE.md) - Android app build
+- [WIDGET_SOLUTION_2025.md](./WIDGET_SOLUTION_2025.md) - Native widget implementation
+- [PROJECT_DOCUMENTATION.md](./PROJECT_DOCUMENTATION.md) - Full technical docs
+
+## 🎯 Roadmap
+
+- [x] PWA with offline support
+- [x] Admin panel
+- [x] Auto-deployment
+- [x] TWA configuration
+- [ ] Native Android widgets (Jetpack Glance)
+- [ ] iOS optimization
+- [ ] Play Store publishing
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit changes
+4. Push to branch
+5. Open a Pull Request
+
+## 📝 License
+
+MIT License - see LICENSE file for details
+
+## 🔗 Links
+
+- **Live App**: https://puic.netlify.app
+- **Admin Panel**: https://puic.netlify.app/admin
+- **GitHub**: https://github.com/Shinzuu/QuickXS-PWA
+- **Issues**: https://github.com/Shinzuu/QuickXS-PWA/issues
+
+---
+
+Built with ❤️ using Svelte 5 and modern web technologies

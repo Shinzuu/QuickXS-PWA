@@ -172,6 +172,7 @@
 
 <!-- Event Detail Modal -->
 {#if showModal && selectedEvent}
+  {@const daysUntil = getDaysUntil(selectedEvent.date)}
   <div
     class="fixed inset-0 z-50 flex items-center justify-center p-4"
     onclick={closeModal}
@@ -237,7 +238,6 @@
         </div>
 
         <!-- Countdown -->
-        {@const daysUntil = getDaysUntil(selectedEvent.date)}
         <div class="p-3 rounded-lg text-center" style="background-color: var(--color-accent); color: var(--color-bg);">
           <p class="text-sm font-semibold">Time Remaining</p>
           <p class="text-2xl font-bold">{formatCountdown(daysUntil)}</p>
