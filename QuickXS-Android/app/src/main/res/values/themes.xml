@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.QuickXS" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/quickxs_accent</item>
+        <item name="colorOnPrimary">@color/quickxs_bg</item>
+        <item name="colorPrimaryContainer">@color/quickxs_card</item>
+        <item name="colorOnPrimaryContainer">@color/quickxs_text</item>
+        <item name="colorSecondary">@color/quickxs_accent</item>
+        <item name="colorOnSecondary">@color/quickxs_bg</item>
+        <item name="colorSecondaryContainer">@color/quickxs_card</item>
+        <item name="colorOnSecondaryContainer">@color/quickxs_text</item>
+        <item name="android:colorBackground">@color/quickxs_bg</item>
+        <item name="colorOnBackground">@color/quickxs_text</item>
+        <item name="colorSurface">@color/quickxs_card</item>
+        <item name="colorOnSurface">@color/quickxs_text</item>
+        <item name="android:statusBarColor">@color/quickxs_bg</item>
+        <item name="android:navigationBarColor">@color/quickxs_bg</item>
+    </style>
+</resources>

@@ -14,6 +14,15 @@
       const notes = $classNotes[classItem.id] || { note: '', links: [] }
       currentNotes = notes
       noteText = notes.note || ''
+
+      // Lock body scroll when modal is open
+      const previousOverflow = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+
+      return () => {
+        // Restore body scroll when modal closes
+        document.body.style.overflow = previousOverflow
+      }
     }
   })
 
@@ -43,8 +52,8 @@
 
 {#if classItem}
   <div
-    class="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4"
-    style="background-color: rgba(0, 0, 0, 0.7);"
+    class="modal-overlay fixed inset-0 flex items-center justify-center p-4"
+    style="background-color: rgba(0, 0, 0, 0.7); z-index: 9999;"
     onclick={handleClose}
     onkeydown={(e) => e.key === 'Escape' && handleClose()}
     role="dialog"

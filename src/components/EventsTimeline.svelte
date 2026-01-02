@@ -34,14 +34,19 @@
     return 'bg-gray-800/50 text-gray-300 border-gray-700'
   }
 
+  let previousOverflow = ''
+
   function openEventModal(event) {
     selectedEvent = event
     showModal = true
+    previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
   }
 
   function closeModal() {
     showModal = false
     selectedEvent = null
+    document.body.style.overflow = previousOverflow
   }
 </script>
 
@@ -202,7 +207,8 @@
 {#if showModal && selectedEvent}
   {@const daysUntil = getDaysUntil(selectedEvent.date)}
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    class="fixed inset-0 flex items-center justify-center p-4"
+    style="z-index: 9999;"
     onclick={closeModal}
     onkeydown={(e) => e.key === 'Escape' && closeModal()}
     role="dialog"

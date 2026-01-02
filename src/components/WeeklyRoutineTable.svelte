@@ -149,7 +149,7 @@
     <table class="w-full border-collapse" style="border: 1px solid var(--color-card);">
       <thead>
         <tr style="background-color: var(--color-bg);">
-          <th class="p-3 text-left font-bold sticky left-0 z-10" style="background-color: var(--color-bg); color: var(--color-accent); border: 1px solid var(--color-card); min-width: 120px;">
+          <th class="p-3 text-left font-bold sticky left-0 z-[5]" style="background-color: var(--color-bg); color: var(--color-accent); border: 1px solid var(--color-card); min-width: 120px;">
             Day / Time
           </th>
           {#each timeSlots as timeSlot}
@@ -166,7 +166,7 @@
         {#each getWeekDays() as day, dayIndex}
           <tr style="background-color: {dayIndex % 2 === 0 ? 'var(--color-bg)' : '#2a2f38'};">
             <td
-              class="p-3 text-sm font-bold sticky left-0 z-10"
+              class="p-3 text-sm font-bold sticky left-0 z-[5]"
               style="
                 background-color: {dayIndex % 2 === 0 ? 'var(--color-bg)' : '#2a2f38'};
                 color: {day === getCurrentDay() ? 'var(--color-accent)' : 'var(--color-text)'};
@@ -251,7 +251,7 @@
   <!-- Mobile View - Unified Timeline -->
   <div class="md:hidden">
     <!-- Day Selector (Sticky) -->
-    <div class="sticky top-0 z-20 -mx-6 px-6 pb-3" style="background: linear-gradient(to bottom, var(--color-card) 0%, var(--color-card) 85%, transparent 100%);">
+    <div class="sticky top-0 z-[5] -mx-6 px-6 pb-3" style="background: linear-gradient(to bottom, var(--color-card) 0%, var(--color-card) 85%, transparent 100%);">
       <div class="flex overflow-x-auto gap-2 pb-2" style="-webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory;">
         {#each getWeekDays() as day}
           {@const isToday = day === getCurrentDay()}

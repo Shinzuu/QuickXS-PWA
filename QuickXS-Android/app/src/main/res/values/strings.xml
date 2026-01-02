@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">QuickXS</string>
+    <string name="current_class_widget_description">Shows your current or next class</string>
+    <string name="daily_progress_widget_description">Shows your daily class completion progress</string>
+    <string name="next_event_widget_description">Shows your next upcoming event</string>
+</resources>

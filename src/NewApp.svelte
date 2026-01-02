@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte'
-  import { loadCachedData, fetchAllData, isLoading, todayClasses } from './lib/store'
-  import { requestNotificationPermission, scheduleClassNotifications } from './lib/notifications'
+  import { loadCachedData, fetchAllData, isLoading, todayClasses, upcomingEvents, events } from './lib/store'
+  import { requestNotificationPermission, scheduleClassNotifications, scheduleEventNotifications, scheduleDailySummary } from './lib/notifications'
   import { currentTheme } from './lib/themeStore'
   import { initWidgetService } from './lib/widgetService'
   import HeroCard from './components/HeroCard.svelte'
@@ -9,10 +9,19 @@
   import EventsTimeline from './components/EventsTimeline.svelte'
   import OfflineIndicator from './components/OfflineIndicator.svelte'
   import WeeklyRoutineTable from './components/WeeklyRoutineTable.svelte'
-  import ThemeSelector from './components/ThemeSelector.svelte'
   import InstallPrompt from './components/InstallPrompt.svelte'
+  import UpdatePrompt from './components/UpdatePrompt.svelte'
+  import EventsArchive from './components/EventsArchive.svelte'
+  import AdminAuth from './components/AdminAuth.svelte'
+  import NotificationSettings from './components/NotificationSettings.svelte'
+  import CalendarView from './components/CalendarView.svelte'
+  import Statistics from './components/Statistics.svelte'
 
   let refreshing = $state(false)
+  let showEventsArchive = $state(false)
+  let showAdminPanel = $state(false)
+  let showCalendar = $state(false)
+  let showStatistics = $state(false)
   let pullStartY = $state(0)
   let pullDistance = $state(0)
   let isPulling = $state(false)
@@ -32,8 +41,19 @@
     setTimeout(async () => {
       const granted = await requestNotificationPermission()
       notificationsEnabled = granted
-      if (granted && $todayClasses.length > 0) {
-        scheduleClassNotifications($todayClasses)
+      if (granted) {
+        // Schedule class notifications
+        if ($todayClasses.length > 0) {
+          scheduleClassNotifications($todayClasses)
+        }
+
+        // Schedule event notifications
+        if ($upcomingEvents.length > 0) {
+          scheduleEventNotifications($upcomingEvents)
+        }
+
+        // Schedule daily summary (7 AM every day)
+        scheduleDailySummary($todayClasses, $upcomingEvents)
       }
     }, 2000)
 
@@ -107,6 +127,73 @@
 </script>
 
 <div class="app min-h-screen p-3" style="background-color: {$currentTheme.bg};">
+  <!-- Navigation Bar -->
+  <div class="flex items-center justify-between mb-6 p-4 rounded-lg" style="background-color: {$currentTheme.card}; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);">
+    <h1 class="text-2xl font-bold" style="color: {$currentTheme.accent};">QuickXS</h1>
+    <div class="flex gap-2 flex-wrap">
+      <button
+        onclick={() => {
+          showCalendar = !showCalendar
+          if (showCalendar) {
+            showAdminPanel = false
+            showEventsArchive = false
+            showStatistics = false
+          }
+        }}
+        class="px-3 py-2 rounded-lg font-semibold transition-all hover:opacity-90"
+        style="background-color: {showCalendar ? $currentTheme.accent : $currentTheme.bg}; color: {showCalendar ? $currentTheme.bg : $currentTheme.accent}; border: 2px solid {$currentTheme.accent};"
+        title="Calendar"
+      >
+        📅
+      </button>
+      <button
+        onclick={() => {
+          showEventsArchive = !showEventsArchive
+          if (showEventsArchive) {
+            showAdminPanel = false
+            showCalendar = false
+            showStatistics = false
+          }
+        }}
+        class="px-3 py-2 rounded-lg font-semibold transition-all hover:opacity-90"
+        style="background-color: {showEventsArchive ? $currentTheme.accent : $currentTheme.bg}; color: {showEventsArchive ? $currentTheme.bg : $currentTheme.accent}; border: 2px solid {$currentTheme.accent};"
+        title="Events Archive"
+      >
+        📚
+      </button>
+      <button
+        onclick={() => {
+          showStatistics = !showStatistics
+          if (showStatistics) {
+            showAdminPanel = false
+            showEventsArchive = false
+            showCalendar = false
+          }
+        }}
+        class="px-3 py-2 rounded-lg font-semibold transition-all hover:opacity-90"
+        style="background-color: {showStatistics ? $currentTheme.accent : $currentTheme.bg}; color: {showStatistics ? $currentTheme.bg : $currentTheme.accent}; border: 2px solid {$currentTheme.accent};"
+        title="Statistics"
+      >
+        📊
+      </button>
+      <button
+        onclick={() => {
+          showAdminPanel = !showAdminPanel
+          if (showAdminPanel) {
+            showEventsArchive = false
+            showCalendar = false
+            showStatistics = false
+          }
+        }}
+        class="px-3 py-2 rounded-lg font-semibold transition-all hover:opacity-90"
+        style="background-color: {showAdminPanel ? $currentTheme.accent : $currentTheme.bg}; color: {showAdminPanel ? $currentTheme.bg : $currentTheme.accent}; border: 2px solid {$currentTheme.accent};"
+        title="Admin Panel"
+      >
+        🔧
+      </button>
+    </div>
+  </div>
+
   <!-- Pull-to-refresh indicator -->
   {#if isPulling || refreshing}
     <div
@@ -137,6 +224,18 @@
         <p style="color: {$currentTheme.text};">Loading schedule...</p>
       </div>
     </div>
+  {:else if showAdminPanel}
+    <!-- Admin Panel Page (with Authentication) -->
+    <AdminAuth />
+  {:else if showCalendar}
+    <!-- Calendar View Page -->
+    <CalendarView />
+  {:else if showStatistics}
+    <!-- Statistics Page -->
+    <Statistics />
+  {:else if showEventsArchive}
+    <!-- Events Archive Page -->
+    <EventsArchive />
   {:else}
     <!-- Top Row: Hero Card -->
     <div class="mb-6">
@@ -162,6 +261,9 @@
         <WeeklyRoutineTable />
       </div>
     </div>
+
+    <!-- Notification Settings (Floating Button) -->
+    <NotificationSettings />
 
     <!-- Quick Links Section -->
     <div class="mb-6">
@@ -194,11 +296,11 @@
     </footer>
   {/if}
 
-  <!-- Theme Selector -->
-  <ThemeSelector />
-
   <!-- PWA Install Prompt -->
   <InstallPrompt />
+
+  <!-- PWA Update Prompt -->
+  <UpdatePrompt />
 </div>
 
 <style>

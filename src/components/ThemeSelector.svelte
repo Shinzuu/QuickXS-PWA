@@ -2,6 +2,17 @@
   import { currentTheme, currentThemeName, themes, setTheme } from '../lib/themeStore'
 
   let showThemeMenu = $state(false)
+
+  $effect(() => {
+    if (showThemeMenu) {
+      const previousOverflow = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+
+      return () => {
+        document.body.style.overflow = previousOverflow
+      }
+    }
+  })
 </script>
 
 <!-- Theme Toggle Button -->
@@ -20,7 +31,7 @@
 <!-- Theme Menu -->
 {#if showThemeMenu}
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    class="fixed inset-0 z-[100] flex items-center justify-center p-4"
     onclick={() => showThemeMenu = false}
     onkeydown={(e) => e.key === 'Escape' && (showThemeMenu = false)}
     role="dialog"

@@ -7,8 +7,11 @@ export default defineConfig({
   plugins: [
     svelte(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['favicon_io/*.png', 'favicon_io/*.ico', 'widgets/*.html'],
+      devOptions: {
+        enabled: false
+      },
       manifest: {
         name: 'QuickXS - Student Schedule Manager',
         short_name: 'QuickXS',

@@ -9,7 +9,7 @@ export const events = writable([])
 export const links = writable([])
 
 // UI state
-export const isLoading = writable(true)
+export const isLoading = writable(false)
 export const isOffline = writable(!navigator.onLine)
 export const lastUpdated = writable(null)
 export const focusMode = writable(false)
@@ -127,8 +127,10 @@ export async function fetchLinks() {
   }
 }
 
-export async function fetchAllData() {
-  isLoading.set(true)
+export async function fetchAllData(showLoadingIndicator = false) {
+  if (showLoadingIndicator) {
+    isLoading.set(true)
+  }
 
   try {
     await Promise.all([
