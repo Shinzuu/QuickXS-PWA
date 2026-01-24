@@ -715,13 +715,386 @@
     </div>
   </div>
 
-  <!-- Rest of the component continues... -->
-  <!-- (Filters, view modes, events display - same as before but with duplicate buttons) -->
+  <!-- Filters and View Controls -->
+  <div class="flex flex-wrap gap-3 items-center">
+    <!-- View Mode -->
+    <div class="flex gap-2">
+      <button
+        onclick={() => viewMode = 'cards'}
+        class="px-3 py-2 rounded-lg font-semibold transition-all"
+        style="background-color: {viewMode === 'cards' ? 'var(--color-accent)' : 'var(--color-card)'}; color: {viewMode === 'cards' ? 'var(--color-bg)' : 'var(--color-text)'};"
+      >
+        🎴 Cards
+      </button>
+      <button
+        onclick={() => viewMode = 'table'}
+        class="px-3 py-2 rounded-lg font-semibold transition-all"
+        style="background-color: {viewMode === 'table' ? 'var(--color-accent)' : 'var(--color-card)'}; color: {viewMode === 'table' ? 'var(--color-bg)' : 'var(--color-text)'};"
+      >
+        📋 Table
+      </button>
+    </div>
 
+    <!-- Filters -->
+    <select bind:value={filterType} class="px-3 py-2 rounded-lg" style="background-color: var(--color-card); color: var(--color-text);">
+      <option value="all">All Types</option>
+      {#each eventTypes as type}
+        <option value={type}>{type}</option>
+      {/each}
+    </select>
+
+    <select bind:value={filterPriority} class="px-3 py-2 rounded-lg" style="background-color: var(--color-card); color: var(--color-text);">
+      <option value="all">All Priorities</option>
+      {#each priorities as priority}
+        <option value={priority}>{priority}</option>
+      {/each}
+    </select>
+
+    <select bind:value={filterStatus} class="px-3 py-2 rounded-lg" style="background-color: var(--color-card); color: var(--color-text);">
+      <option value="all">All Status</option>
+      <option value="pending">Pending</option>
+      <option value="completed">Completed</option>
+    </select>
+
+    <!-- Sort -->
+    <select bind:value={sortBy} class="px-3 py-2 rounded-lg" style="background-color: var(--color-card); color: var(--color-text);">
+      <option value="date">Sort by Date</option>
+      <option value="name">Sort by Name</option>
+      <option value="priority">Sort by Priority</option>
+      <option value="type">Sort by Type</option>
+    </select>
+
+    <button
+      onclick={() => sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'}
+      class="px-3 py-2 rounded-lg font-semibold"
+      style="background-color: var(--color-card); color: var(--color-text);"
+    >
+      {sortOrder === 'asc' ? '⬆️' : '⬇️'}
+    </button>
+
+    <!-- Results count -->
+    <div class="ml-auto text-sm" style="color: var(--color-text); opacity: 0.7;">
+      Showing {filteredEvents.length} of {$events.length} events
+    </div>
+  </div>
+
+  <!-- Events Display -->
+  {#if filteredEvents.length === 0}
+    <div class="text-center py-12" style="background-color: var(--color-card); border-radius: 12px;">
+      <div class="text-6xl mb-4">📭</div>
+      <p class="text-xl font-bold" style="color: var(--color-text);">No events found</p>
+      <p class="text-sm mt-2" style="color: var(--color-text); opacity: 0.7;">
+        {searchQuery || filterType !== 'all' ? 'Try adjusting your filters' : 'Add your first event to get started'}
+      </p>
+    </div>
+  {:else if viewMode === 'cards'}
+    <!-- Cards View -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {#each filteredEvents as event (event.id)}
+        <div
+          class="p-4 rounded-lg border-2 transition-all hover:scale-102"
+          style="background-color: var(--color-card); border-color: {event.is_completed ? '#10b981' : getPriorityColor(event.priority)};"
+        >
+          <!-- Selection & Icon -->
+          <div class="flex items-start justify-between mb-3">
+            <input
+              type="checkbox"
+              checked={selectedEvents.has(event.id)}
+              onchange={() => toggleEventSelection(event.id)}
+              class="mt-1"
+            />
+            <span class="text-2xl">{getEventTypeIcon(event.event_type)}</span>
+          </div>
+
+          <!-- Event Info -->
+          <h3 class="font-bold text-lg mb-2" style="color: var(--color-text);">{event.name}</h3>
+
+          <div class="space-y-1 text-sm mb-3" style="color: var(--color-text); opacity: 0.8;">
+            <div>📅 {new Date(event.date).toLocaleDateString()}</div>
+            <div>⏰ {formatTime(event.time)}</div>
+            <div class="flex gap-2 flex-wrap mt-2">
+              <span class="px-2 py-0.5 rounded-full text-xs" style="background-color: {getPriorityColor(event.priority)}; color: white;">
+                {event.event_type}
+              </span>
+              <span class="px-2 py-0.5 rounded-full text-xs" style="background-color: var(--color-bg); color: var(--color-text);">
+                {event.priority}
+              </span>
+              {#if event.is_completed}
+                <span class="px-2 py-0.5 rounded-full text-xs bg-green-600 text-white">
+                  ✓ Done
+                </span>
+              {/if}
+            </div>
+          </div>
+
+          {#if event.info}
+            <p class="text-sm mb-3" style="color: var(--color-text); opacity: 0.7;">
+              {event.info.length > 80 ? event.info.substring(0, 80) + '...' : event.info}
+            </p>
+          {/if}
+
+          <!-- Actions -->
+          <div class="flex gap-2">
+            <button
+              onclick={() => openEditModal(event)}
+              class="flex-1 px-3 py-2 rounded-lg text-sm font-semibold"
+              style="background-color: var(--color-accent); color: var(--color-bg);"
+            >
+              ✏️ Edit
+            </button>
+            <button
+              onclick={() => duplicateEvent(event)}
+              class="px-3 py-2 rounded-lg text-sm font-semibold"
+              style="background-color: #8b5cf6; color: white;"
+              title="Duplicate"
+            >
+              📋
+            </button>
+            <button
+              onclick={() => handleDelete(event.id)}
+              class="px-3 py-2 rounded-lg text-sm font-semibold bg-red-600 text-white"
+            >
+              🗑️
+            </button>
+          </div>
+        </div>
+      {/each}
+    </div>
+  {:else}
+    <!-- Table View -->
+    <div class="overflow-x-auto rounded-lg" style="background-color: var(--color-card);">
+      <table class="w-full">
+        <thead>
+          <tr style="background-color: var(--color-bg);">
+            <th class="p-3 text-left">
+              <input
+                type="checkbox"
+                checked={selectAll}
+                onchange={toggleSelectAll}
+              />
+            </th>
+            <th class="p-3 text-left" style="color: var(--color-accent);">Name</th>
+            <th class="p-3 text-left" style="color: var(--color-accent);">Date</th>
+            <th class="p-3 text-left" style="color: var(--color-accent);">Time</th>
+            <th class="p-3 text-left" style="color: var(--color-accent);">Type</th>
+            <th class="p-3 text-left" style="color: var(--color-accent);">Priority</th>
+            <th class="p-3 text-left" style="color: var(--color-accent);">Status</th>
+            <th class="p-3 text-right" style="color: var(--color-accent);">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each filteredEvents as event (event.id)}
+            <tr class="border-t transition-colors hover:bg-opacity-50" style="border-color: var(--color-bg);">
+              <td class="p-3">
+                <input
+                  type="checkbox"
+                  checked={selectedEvents.has(event.id)}
+                  onchange={() => toggleEventSelection(event.id)}
+                />
+              </td>
+              <td class="p-3 font-semibold" style="color: var(--color-text);">
+                {getEventTypeIcon(event.event_type)} {event.name}
+              </td>
+              <td class="p-3" style="color: var(--color-text);">{new Date(event.date).toLocaleDateString()}</td>
+              <td class="p-3" style="color: var(--color-text);">{formatTime(event.time)}</td>
+              <td class="p-3">
+                <span class="px-2 py-1 rounded-full text-xs" style="background-color: {getPriorityColor(event.priority)}; color: white;">
+                  {event.event_type}
+                </span>
+              </td>
+              <td class="p-3">
+                <span class="text-sm" style="color: {getPriorityColor(event.priority)};">
+                  {event.priority}
+                </span>
+              </td>
+              <td class="p-3">
+                {#if event.is_completed}
+                  <span class="px-2 py-1 rounded-full text-xs bg-green-600 text-white">
+                    ✓ Done
+                  </span>
+                {:else}
+                  <span class="px-2 py-1 rounded-full text-xs bg-yellow-600 text-white">
+                    Pending
+                  </span>
+                {/if}
+              </td>
+              <td class="p-3 text-right">
+                <button
+                  onclick={() => openEditModal(event)}
+                  class="px-3 py-1 rounded text-sm mr-2"
+                  style="background-color: var(--color-accent); color: var(--color-bg);"
+                >
+                  Edit
+                </button>
+                <button
+                  onclick={() => duplicateEvent(event)}
+                  class="px-3 py-1 rounded text-sm mr-2"
+                  style="background-color: #8b5cf6; color: white;"
+                  title="Duplicate"
+                >
+                  📋
+                </button>
+                <button
+                  onclick={() => handleDelete(event.id)}
+                  class="px-3 py-1 rounded text-sm bg-red-600 text-white"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
+  {/if}
+
+  <!-- Keyboard Shortcuts Hint -->
   <div class="text-sm" style="color: var(--color-text); opacity: 0.5;">
     💡 Shortcuts: Ctrl+N (New), Ctrl+Z (Undo), Ctrl+Y (Redo), Ctrl+F (Search), Esc (Close)
   </div>
 </div>
+
+<!-- Add/Edit Modal with DatePicker -->
+{#if showAddModal || showEditModal}
+  <div class="fixed inset-0 flex items-center justify-center p-4 z-50" style="background-color: rgba(0, 0, 0, 0.7);">
+    <div class="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-lg p-6" style="background-color: var(--color-card);">
+      <h2 class="text-2xl font-bold mb-4" style="color: var(--color-accent);">
+        {showAddModal ? '➕ Add Event' : '✏️ Edit Event'}
+      </h2>
+
+      <form onsubmit={(e) => { e.preventDefault(); showAddModal ? handleAdd() : handleUpdate() }} class="space-y-4">
+        <!-- Event Name with Auto-suggestions -->
+        <div class="relative">
+          <label class="block text-sm font-semibold mb-2" style="color: var(--color-text);">Event Name *</label>
+          <input
+            type="text"
+            bind:value={eventForm.name}
+            oninput={() => {
+              updateSuggestions(eventForm.name)
+              handleFormChange()
+            }}
+            placeholder="e.g., ML CT, Assignment 1"
+            required
+            class="w-full p-3 rounded-lg"
+            style="background-color: var(--color-bg); color: var(--color-text); border: 2px solid var(--color-accent);"
+          />
+
+          <!-- Auto-suggestions for name -->
+          {#if showSuggestions && eventForm.name}
+            <div class="absolute z-10 w-full mt-1 rounded-lg shadow-lg" style="background-color: var(--color-card); border: 2px solid var(--color-accent);">
+              {#each suggestions as suggestion}
+                <button
+                  type="button"
+                  onclick={() => selectSuggestion(suggestion)}
+                  class="w-full px-4 py-2 text-left hover:bg-opacity-50 transition-colors"
+                  style="color: var(--color-text);"
+                >
+                  💡 {suggestion}
+                </button>
+              {/each}
+            </div>
+          {/if}
+        </div>
+
+        <!-- Date with DatePicker Widget -->
+        <div>
+          <label class="block text-sm font-semibold mb-2" style="color: var(--color-text);">Date *</label>
+          <DatePickerWidget bind:value={eventForm.date} onSelect={(date) => { eventForm.date = date; handleFormChange() }} />
+        </div>
+
+        <!-- Time -->
+        <div>
+          <label class="block text-sm font-semibold mb-2" style="color: var(--color-text);">Time *</label>
+          <input
+            type="time"
+            bind:value={eventForm.time}
+            oninput={handleFormChange}
+            required
+            class="w-full p-3 rounded-lg"
+            style="background-color: var(--color-bg); color: var(--color-text); border: 2px solid var(--color-accent);"
+          />
+        </div>
+
+        <!-- Type and Priority -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold mb-2" style="color: var(--color-text);">Event Type *</label>
+            <select
+              bind:value={eventForm.event_type}
+              onchange={handleFormChange}
+              class="w-full p-3 rounded-lg"
+              style="background-color: var(--color-bg); color: var(--color-text); border: 2px solid var(--color-accent);"
+            >
+              {#each eventTypes as type}
+                <option value={type}>{type}</option>
+              {/each}
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-2" style="color: var(--color-text);">Priority</label>
+            <select
+              bind:value={eventForm.priority}
+              onchange={handleFormChange}
+              class="w-full p-3 rounded-lg"
+              style="background-color: var(--color-bg); color: var(--color-text); border: 2px solid var(--color-accent);"
+            >
+              {#each priorities as priority}
+                <option value={priority}>{priority}</option>
+              {/each}
+            </select>
+          </div>
+        </div>
+
+        <!-- Additional Info -->
+        <div>
+          <label class="block text-sm font-semibold mb-2" style="color: var(--color-text);">Additional Information</label>
+          <textarea
+            bind:value={eventForm.info}
+            oninput={handleFormChange}
+            placeholder="Optional details..."
+            rows="3"
+            class="w-full p-3 rounded-lg"
+            style="background-color: var(--color-bg); color: var(--color-text); border: 2px solid var(--color-accent);"
+          ></textarea>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-3">
+          <button
+            type="submit"
+            class="flex-1 px-4 py-3 rounded-lg font-semibold"
+            style="background-color: var(--color-accent); color: var(--color-bg);"
+          >
+            {showAddModal ? '✅ Add Event' : '💾 Save Changes'}
+          </button>
+          {#if showAddModal}
+            <button
+              type="button"
+              onclick={saveAsTemplate}
+              class="px-4 py-3 rounded-lg font-semibold"
+              style="background-color: #8b5cf6; color: white;"
+              title="Save as Template"
+            >
+              💾 Template
+            </button>
+          {/if}
+          <button
+            type="button"
+            onclick={() => { showAddModal = false; showEditModal = null; resetForm() }}
+            class="px-4 py-3 rounded-lg font-semibold"
+            style="background-color: var(--color-bg); color: var(--color-text);"
+          >
+            Cancel
+          </button>
+        </div>
+
+        <div class="text-xs" style="color: var(--color-text); opacity: 0.6;">
+          💾 Auto-saving draft...
+        </div>
+      </form>
+    </div>
+  </div>
+{/if}
 
 <!-- Templates Modal (simplified version shown) -->
 {#if showTemplatesModal}
