@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte'
   import { supabase } from '../lib/supabase'
-  import AdminPanel from './AdminPanel.svelte'
+  import AdminPanelNew from './AdminPanelNew.svelte'
 
   let isAuthenticated = $state(false)
   let email = $state('')
@@ -178,7 +178,7 @@
       </div>
     </div>
 
-    <AdminPanel />
+    <AdminPanelNew />
   </div>
 {/if}
 
