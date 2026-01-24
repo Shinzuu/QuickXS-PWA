@@ -296,9 +296,20 @@
     try {
       const oldEvent = $events.find(e => e.id === showEditModal)
 
+      // Only send updatable fields (exclude id, created_at, updated_at)
+      const updateData = {
+        name: eventForm.name,
+        date: eventForm.date,
+        time: eventForm.time,
+        event_type: eventForm.event_type,
+        info: eventForm.info,
+        priority: eventForm.priority,
+        is_completed: eventForm.is_completed
+      }
+
       const { data, error } = await supabase
         .from('events')
-        .update(eventForm)
+        .update(updateData)
         .eq('id', showEditModal)
         .select()
 
