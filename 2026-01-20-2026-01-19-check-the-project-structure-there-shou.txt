@@ -1,0 +1,133 @@
+
+ ▐▛███▜▌   Claude Code v2.0.9
+▝▜█████▛▘  Sonnet 4.5 · Claude Max
+  ▘▘ ▝▝    /home/shinzuu/QuickXS-PWA
+
+> @2026-01-19-check-the-project-structure-there-should-be-a-key.txt 
+  ⎿  Read 2026-01-19-check-the-project-structure-there-should-be-a-key.txt (215 lines)
+
+● I can see from this conversation history that you successfully added CT events to your schedule. The final correct schedule was:
+
+  1. ML CT - Wednesday, January 22, 2026 at 1:00 PM (special extra class)
+  2. SEEP CT1 - Monday, January 26, 2026 at 1:00 PM
+  3. TC CT - Monday, January 26, 2026 at 2:30 PM
+
+  Is there something you'd like me to help you with regarding these events or something else?
+
+> new twp class we have ct 1 , topic will be on slides. check the calendar to find about when the next class . 
+
+● Bash(node check-live-data.js | grep -A 50 "📚 CLASSES")
+  ⎿  📚 CLASSES/ROUTINES:             
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     Total: 13 classes
+     … +42 lines (ctrl+o to expand)
+
+● Bash(for i in {0..14}; do date -d "2026-01-20 + $i days" +"%Y-%m-%d %A"; done)
+  ⎿  2026-01-20 Tuesday            
+     2026-01-21 Wednesday
+     2026-01-22 Thursday
+     … +12 lines (ctrl+o to expand)
+
+● Found it! TWP class is on Tuesday 2:30 PM [404].
+
+  Today is Monday, January 20, so the next TWP class is tomorrow, Tuesday, January 21, 2026 at 2:30 PM.
+
+  Should I add the TWP CT1 event for that date?
+
+> check my routine i dont have twp class on tues day 
+
+● You're right, I apologize for the confusion. Looking at your routine again, I see:
+
+  Tuesday 2:30 PM - TWP [404]
+
+  But you're saying you don't have TWP on Tuesday. Let me check when your next TWP class actually is. Could you tell me which day you have TWP class, or should I look for any course
+  plan documents that might have the updated schedule?
+
+> my bad . it your fault .today is tues day . we had class today . we dont have tomorrow . we only have twp class on tues day .so you need to find the next week that have twp class . 
+
+● Bash(date +"%A, %B %d, %Y")
+  ⎿  Tuesday, January 20, 2026
+
+● Got it! Today is Tuesday, January 20, 2026. You had TWP class today at 2:30 PM.
+
+  The next TWP class (since it's only on Tuesdays) will be next Tuesday, January 27, 2026 at 2:30 PM.
+
+  Should I add the TWP CT1 event for that date with the topic "slides covered to date"?
+
+> yes 
+
+● Bash(node -e "
+      import { createClient } from '@supabase/supabase-js';…)
+  ⎿  📝 Adding TWP CT1 event...    
+
+     Event: {
+     … +14 lines (ctrl+o to expand)
+
+● Bash(node -e "
+      import { createClient } from '@supabase/supabase-js';…)
+  ⎿  📝 Adding TWP CT1 event...   
+     ❌ Error: {
+       code: 'PGRST204',
+     … +4 lines (ctrl+o to expand)
+
+● Read(add-ml-lab-report.js)
+  ⎿  Read 51 lines (ctrl+o to expand)
+
+● Bash(node -e "
+      import { createClient } from '@supabase/supabase-js';…)
+  ⎿  📝 Adding TWP CT1 event...   
+     ❌ Error: {
+       code: '23514',
+     … +5 lines (ctrl+o to expand)
+
+● Bash(node check-live-data.js | grep "event_type")
+  ⎿  No matches found
+
+● Read(fix-cts.js)
+  ⎿  Read 81 lines (ctrl+o to expand)
+
+● Bash(node -e "
+      import { createClient } from '@supabase/supabase-js';…)
+  ⎿  📝 Adding TWP CT1 event...             
+
+     ✅ Successfully added TWP CT1!
+     📅 Tuesday, January 27, 2026 at 2:30 PM
+
+● ✅ TWP CT1 added successfully for Tuesday, January 27, 2026 at 2:30 PM!
+
+> alright . add a rule so next time you for any of the even we are adding , we follow this rule if asked 
+
+● Search(pattern: "**/*.md")
+  ⎿  Found 100 files (ctrl+o to expand)
+
+● Read(quick-add-event.md)
+  ⎿  Read 75 lines (ctrl+o to expand)
+
+● Write(event-adding-rules.md)
+  ⎿  Wrote 76 lines to event-adding-rules.md                                                       
+     # Event Adding Rules
+     ## Workflow for Adding Events
+     When asked to add events (CTs, quizzes, assignments, etc.), follow these steps:
+     ### 1. Determine the Event Date
+     - **Check the current date first**: Use `date` command to get today's date and day of the week
+     - **Check the class schedule**: Run `node check-live-data.js` to see the routine
+     - **Calculate next occurrence**:
+     … +66 lines (ctrl+o to expand)
+
+● ✅ Created event-adding-rules.md with the complete workflow for adding events. This includes:
+
+  1. How to check current date and find next class dates
+  2. Correct database schema with field names
+  3. Valid event types
+  4. Common mistakes to avoid
+  5. Step-by-step verification process
+
+  Next time you ask me to add events, I'll follow these rules to ensure dates and details are correct.
+
+> alright 
+
+● Great! The rules are saved. Let me know whenever you need to add more events and I'll follow the workflow.
+
+
+
+

@@ -5,7 +5,7 @@
   import { swipe, vibrate } from '../lib/swipe'
 
   const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
-  const SERVICE_KEY = 'sb_secret__H6b6JdnCNiFKrjmFTkGSQ_zIB1_IRg'
+  const SERVICE_KEY = import.meta.env.VITE_SUPABASE_SERVICE_KEY
 
   let activeTab = $state('events') // 'events', 'routines', 'templates'
   let showAddEventModal = $state(false)
