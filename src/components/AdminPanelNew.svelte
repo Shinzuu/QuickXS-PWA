@@ -1,6 +1,6 @@
 <script>
   import AdminDashboard from './AdminDashboard.svelte'
-  import AdminEventsManager from './AdminEventsManager.svelte'
+  import AdminEventsManagerPro from './AdminEventsManagerPro.svelte'
 
   let activeTab = $state('dashboard') // 'dashboard', 'events', 'routines', 'settings'
 
@@ -51,7 +51,7 @@
     {#if activeTab === 'dashboard'}
       <AdminDashboard />
     {:else if activeTab === 'events'}
-      <AdminEventsManager />
+      <AdminEventsManagerPro />
     {:else if activeTab === 'routines'}
       <div class="p-6">
         <h2 class="text-2xl font-bold mb-4" style="color: var(--color-accent);">📚 Class Routines</h2>
