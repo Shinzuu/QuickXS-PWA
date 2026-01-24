@@ -1,61 +1,81 @@
 <script>
   import { onMount } from 'svelte'
+  import { supabase } from '../lib/supabase'
   import AdminPanel from './AdminPanel.svelte'
 
-  const ADMIN_PASSWORD_HASH = import.meta.env.VITE_ADMIN_PASSWORD_HASH
-
   let isAuthenticated = $state(false)
+  let email = $state('')
   let password = $state('')
   let error = $state('')
-  let isLoading = $state(true)
+  let loading = $state(true)
+  let loggingIn = $state(false)
+  let user = $state(null)
 
-  onMount(() => {
-    // Check if already authenticated in this session
-    const authToken = sessionStorage.getItem('quickxs_admin_auth')
-    if (authToken === ADMIN_PASSWORD_HASH) {
+  onMount(async () => {
+    // Check if user is already logged in
+    const { data: { session } } = await supabase.auth.getSession()
+
+    if (session?.user) {
       isAuthenticated = true
+      user = session.user
     }
-    isLoading = false
-  })
 
-  async function hashPassword(password) {
-    const encoder = new TextEncoder()
-    const data = encoder.encode(password)
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-    const hashArray = Array.from(new Uint8Array(hashBuffer))
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-    return hashHex
-  }
+    loading = false
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        isAuthenticated = true
+        user = session.user
+      } else {
+        isAuthenticated = false
+        user = null
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  })
 
   async function handleLogin(e) {
     e.preventDefault()
     error = ''
+    loggingIn = true
 
-    if (!password) {
-      error = 'Please enter password'
-      return
-    }
+    try {
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
 
-    const hash = await hashPassword(password)
+      if (authError) throw authError
 
-    if (hash === ADMIN_PASSWORD_HASH) {
       isAuthenticated = true
-      sessionStorage.setItem('quickxs_admin_auth', hash)
-      password = ''
-    } else {
-      error = 'Incorrect password'
-      password = ''
+      user = data.user
+      password = '' // Clear password
+    } catch (err) {
+      error = err.message || 'Login failed. Please check your credentials.'
+      console.error('Login error:', err)
+    } finally {
+      loggingIn = false
     }
   }
 
-  function handleLogout() {
-    isAuthenticated = false
-    sessionStorage.removeItem('quickxs_admin_auth')
-    password = ''
+  async function handleLogout() {
+    try {
+      await supabase.auth.signOut()
+      isAuthenticated = false
+      user = null
+      email = ''
+      password = ''
+    } catch (err) {
+      console.error('Logout error:', err)
+    }
   }
 </script>
 
-{#if isLoading}
+{#if loading}
   <div class="flex items-center justify-center min-h-screen" style="background-color: var(--color-bg);">
     <div class="animate-spin rounded-full h-12 w-12 border-3 border-t-transparent" style="border-color: var(--color-accent); border-top-color: transparent;"></div>
   </div>
@@ -67,64 +87,95 @@
         <div class="text-6xl mb-4">🔐</div>
         <h1 class="text-3xl font-bold mb-2" style="color: var(--color-accent);">Admin Login</h1>
         <p class="text-sm" style="color: var(--color-text); opacity: 0.7;">
-          Enter password to access admin panel
+          Sign in with your Supabase account
         </p>
       </div>
 
       <form onsubmit={handleLogin} class="p-8 rounded-2xl shadow-2xl" style="background-color: var(--color-card);">
-        <div class="mb-6">
-          <label class="block text-sm font-semibold mb-2" style="color: var(--color-text);">
-            Password
+        {#if error}
+          <div class="mb-4 p-4 rounded-lg bg-red-500 bg-opacity-20 border-2 border-red-500">
+            <p class="text-red-400 text-sm">❌ {error}</p>
+          </div>
+        {/if}
+
+        <div class="mb-4">
+          <label for="email" class="block text-sm font-semibold mb-2" style="color: var(--color-text);">
+            Email
           </label>
           <input
-            type="password"
-            bind:value={password}
-            placeholder="Enter admin password"
+            id="email"
+            type="email"
+            bind:value={email}
+            required
+            disabled={loggingIn}
             class="w-full px-4 py-3 rounded-lg border-2 transition-all focus:outline-none"
             style="
               background-color: var(--color-bg);
               color: var(--color-text);
               border-color: {error ? '#ef4444' : 'var(--color-accent)'};
             "
-            autofocus
+            placeholder="admin@example.com"
           />
-          {#if error}
-            <p class="text-red-500 text-sm mt-2">❌ {error}</p>
-          {/if}
+        </div>
+
+        <div class="mb-6">
+          <label for="password" class="block text-sm font-semibold mb-2" style="color: var(--color-text);">
+            Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            bind:value={password}
+            required
+            disabled={loggingIn}
+            class="w-full px-4 py-3 rounded-lg border-2 transition-all focus:outline-none"
+            style="
+              background-color: var(--color-bg);
+              color: var(--color-text);
+              border-color: {error ? '#ef4444' : 'var(--color-accent)'};
+            "
+            placeholder="••••••••"
+          />
         </div>
 
         <button
           type="submit"
-          class="w-full py-3 px-6 rounded-lg font-semibold transition-all hover:scale-105 hover:shadow-lg"
+          disabled={loggingIn}
+          class="w-full py-3 px-6 rounded-lg font-semibold transition-all hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           style="background-color: var(--color-accent); color: var(--color-bg);"
         >
-          🔓 Login
+          {loggingIn ? '🔄 Logging in...' : '🔓 Login'}
         </button>
 
         <div class="mt-6 p-4 rounded-lg" style="background-color: var(--color-bg);">
           <p class="text-xs" style="color: var(--color-text); opacity: 0.6;">
-            ℹ️ Default password: <code class="px-2 py-1 rounded" style="background-color: var(--color-card);">admin123</code>
+            ℹ️ Secure authentication powered by Supabase
           </p>
           <p class="text-xs mt-2" style="color: var(--color-text); opacity: 0.6;">
-            Change password in <code class="px-1 rounded" style="background-color: var(--color-card);">.env</code> file
+            Admin users must be created in Supabase Dashboard
           </p>
         </div>
       </form>
     </div>
   </div>
 {:else}
-  <!-- Admin Panel with Logout -->
+  <!-- Admin Panel (Authenticated) -->
   <div style="background-color: var(--color-bg);">
-    <!-- Logout Button (Floating) -->
+    <!-- Logout Button -->
     <div class="fixed top-4 right-4 z-50">
-      <button
-        onclick={handleLogout}
-        class="px-4 py-2 rounded-lg font-semibold shadow-lg transition-all hover:scale-105"
-        style="background-color: #ef4444; color: white;"
-        title="Logout from Admin Panel"
-      >
-        🚪 Logout
-      </button>
+      <div class="flex items-center gap-3">
+        <div class="text-sm" style="color: var(--color-text); opacity: 0.8;">
+          👤 {user?.email}
+        </div>
+        <button
+          onclick={handleLogout}
+          class="px-4 py-2 rounded-lg font-semibold shadow-lg transition-all hover:scale-105"
+          style="background-color: #ef4444; color: white;"
+          title="Logout from Admin Panel"
+        >
+          🚪 Logout
+        </button>
+      </div>
     </div>
 
     <AdminPanel />
@@ -132,8 +183,13 @@
 {/if}
 
 <style>
-  code {
-    font-family: 'Courier New', monospace;
-    font-size: 0.9em;
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 </style>

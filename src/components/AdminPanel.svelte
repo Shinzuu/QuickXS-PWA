@@ -3,9 +3,7 @@
   import { formatTime } from '../lib/utils'
   import { eventTemplates } from '../lib/templateStore'
   import { swipe, vibrate } from '../lib/swipe'
-
-  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
-  const SERVICE_KEY = import.meta.env.VITE_SUPABASE_SERVICE_KEY
+  import { supabase } from '../lib/supabase'
 
   let activeTab = $state('events') // 'events', 'routines', 'templates'
   let showAddEventModal = $state(false)
@@ -116,53 +114,38 @@
 
   async function handleAddEvent() {
     try {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/events`, {
-        method: 'POST',
-        headers: {
-          'apikey': SERVICE_KEY,
-          'Authorization': `Bearer ${SERVICE_KEY}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=representation'
-        },
-        body: JSON.stringify(eventForm)
-      })
+      const { data, error } = await supabase
+        .from('events')
+        .insert([eventForm])
+        .select()
 
-      if (response.ok) {
-        await fetchAllData(true)
-        closeAddEventModal()
-        alert('✅ Event added successfully!')
-      } else {
-        const error = await response.json()
-        alert('❌ Error: ' + (error.message || 'Failed to add event'))
-      }
+      if (error) throw error
+
+      await fetchAllData(true)
+      closeAddEventModal()
+      alert('✅ Event added successfully!')
     } catch (err) {
       alert('❌ Error: ' + err.message)
+      console.error('Add event error:', err)
     }
   }
 
   async function handleUpdateEvent() {
     try {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${selectedEvent.id}`, {
-        method: 'PATCH',
-        headers: {
-          'apikey': SERVICE_KEY,
-          'Authorization': `Bearer ${SERVICE_KEY}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=representation'
-        },
-        body: JSON.stringify(eventForm)
-      })
+      const { data, error } = await supabase
+        .from('events')
+        .update(eventForm)
+        .eq('id', selectedEvent.id)
+        .select()
 
-      if (response.ok) {
-        await fetchAllData(true)
-        closeEditEventModal()
-        alert('✅ Event updated successfully!')
-      } else {
-        const error = await response.json()
-        alert('❌ Error: ' + (error.message || 'Failed to update event'))
-      }
+      if (error) throw error
+
+      await fetchAllData(true)
+      closeEditEventModal()
+      alert('✅ Event updated successfully!')
     } catch (err) {
       alert('❌ Error: ' + err.message)
+      console.error('Update event error:', err)
     }
   }
 
@@ -170,43 +153,35 @@
     if (!confirm('Are you sure you want to delete this event?')) return
 
     try {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${eventId}`, {
-        method: 'DELETE',
-        headers: {
-          'apikey': SERVICE_KEY,
-          'Authorization': `Bearer ${SERVICE_KEY}`
-        }
-      })
+      const { error } = await supabase
+        .from('events')
+        .delete()
+        .eq('id', eventId)
 
-      if (response.ok) {
-        await fetchAllData(true)
-        alert('✅ Event deleted successfully!')
-      } else {
-        alert('❌ Failed to delete event')
-      }
+      if (error) throw error
+
+      await fetchAllData(true)
+      alert('✅ Event deleted successfully!')
     } catch (err) {
       alert('❌ Error: ' + err.message)
+      console.error('Delete event error:', err)
     }
   }
 
   async function toggleEventCompletion(event) {
     try {
       vibrate([50])
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${event.id}`, {
-        method: 'PATCH',
-        headers: {
-          'apikey': SERVICE_KEY,
-          'Authorization': `Bearer ${SERVICE_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ is_completed: !event.is_completed })
-      })
+      const { error } = await supabase
+        .from('events')
+        .update({ is_completed: !event.is_completed })
+        .eq('id', event.id)
 
-      if (response.ok) {
-        await fetchAllData(true)
-      }
+      if (error) throw error
+
+      await fetchAllData(true)
     } catch (err) {
       alert('❌ Error: ' + err.message)
+      console.error('Toggle completion error:', err)
     }
   }
 
