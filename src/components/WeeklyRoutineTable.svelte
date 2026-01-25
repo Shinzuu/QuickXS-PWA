@@ -193,9 +193,7 @@
                     colspan={span}
                     class="p-3 text-center transition-all cursor-pointer relative group"
                     style="
-                      background: {isCurrent
-                        ? 'linear-gradient(135deg, var(--color-accent) 0%, #00c9d1 100%)'
-                        : `linear-gradient(135deg, ${subjectColors.bg} 0%, ${adjustBrightness(subjectColors.bg, 20)} 100%)`};
+                      background-color: {isCurrent ? 'var(--color-accent)' : subjectColors.bg};
                       border: 2px solid {isCurrent ? 'var(--color-accent)' : subjectColors.border};
                       color: {isCurrent ? 'var(--color-bg)' : 'var(--color-text)'};
                       box-shadow: {isCurrent ? '0 4px 6px rgba(0, 173, 181, 0.3)' : 'none'};
@@ -251,7 +249,7 @@
   <!-- Mobile View - Unified Timeline -->
   <div class="md:hidden">
     <!-- Day Selector (Sticky) -->
-    <div class="sticky top-0 z-[5] -mx-6 px-6 pb-3" style="background: linear-gradient(to bottom, var(--color-card) 0%, var(--color-card) 85%, transparent 100%);">
+    <div class="sticky top-0 z-[5] -mx-6 px-6 pb-3" style="background-color: var(--color-card); border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
       <div class="flex overflow-x-auto gap-2 pb-2" style="-webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory;">
         {#each getWeekDays() as day}
           {@const isToday = day === getCurrentDay()}
@@ -329,9 +327,7 @@
                     <div
                       class="p-3 rounded-lg transition-all"
                       style="
-                        background: {isCurrent
-                          ? 'linear-gradient(135deg, var(--color-accent) 0%, #00c9d1 100%)'
-                          : `linear-gradient(135deg, ${subjectColors.bg} 0%, ${adjustBrightness(subjectColors.bg, 20)} 100%)`};
+                        background-color: {isCurrent ? 'var(--color-accent)' : subjectColors.bg};
                         border: 2px solid {isCurrent ? 'var(--color-accent)' : isToday ? subjectColors.border : 'transparent'};
                         color: {isCurrent ? 'var(--color-bg)' : 'var(--color-text)'};
                         box-shadow: {isCurrent ? '0 4px 12px rgba(0, 173, 181, 0.3)' : '0 2px 6px rgba(0, 0, 0, 0.2)'};

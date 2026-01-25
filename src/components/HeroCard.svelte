@@ -174,7 +174,7 @@
     <div
       class="hero-card rounded-lg p-6 {getColorClasses(highlightItem.color)} {highlightItem.type === 'current' ? 'pulse-hero' : ''}"
       style="
-        background: linear-gradient(135deg, {getBackgroundColor(highlightItem.color)} 0%, #2d3844 100%);
+        background-color: {getBackgroundColor(highlightItem.color)};
         border-color: {getBorderColor(highlightItem.color)};
         color: var(--color-text);
         box-shadow: 0 4px 20px rgba(0, 173, 181, 0.25);

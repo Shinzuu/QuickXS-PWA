@@ -69,7 +69,7 @@
         <button
           onclick={reload}
           class="flex-1 py-3 px-6 rounded-lg font-bold text-white transition-all hover:scale-105"
-          style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"
+          style="background-color: var(--color-accent);"
         >
           🔄 Reload App
         </button>

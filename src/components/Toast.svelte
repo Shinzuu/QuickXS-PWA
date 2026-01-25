@@ -29,7 +29,7 @@
     <div
       class="toast flex items-start gap-3 p-4 rounded-xl shadow-2xl backdrop-blur-sm"
       style="
-        background: linear-gradient(135deg, {getColor(toast.type)}15 0%, {getColor(toast.type)}25 100%);
+        background-color: {$currentTheme.card};
         border-left: 4px solid {getColor(toast.type)};
         color: {$currentTheme.text};
         animation: slideIn 0.3s ease-out;
