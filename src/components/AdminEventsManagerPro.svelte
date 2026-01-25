@@ -24,10 +24,14 @@
   let showAddModal = $state(false)
   let showEditModal = $state(null)
   let showTemplatesModal = $state(false)
+  let showExportMenu = $state(false)
 
   // Loading states
   let isSubmitting = $state(false)
   let isDeletingId = $state(null)
+
+  // File input for import
+  let fileInputRef = $state(null)
 
   // Form
   let eventForm = $state({
@@ -604,13 +608,13 @@
   function exportToCSV() {
     const headers = ['Name', 'Date', 'Time', 'Type', 'Priority', 'Status', 'Info']
     const rows = filteredEvents.map(e => [
-      e.name,
+      `"${e.name.replace(/"/g, '""')}"`,
       e.date,
       e.time,
       e.event_type,
       e.priority,
       e.is_completed ? 'Completed' : 'Pending',
-      e.info || ''
+      `"${(e.info || '').replace(/"/g, '""')}"`
     ])
 
     const csv = [headers, ...rows].map(row => row.join(',')).join('\n')
@@ -620,7 +624,109 @@
     a.href = url
     a.download = `events-${new Date().toISOString().split('T')[0]}.csv`
     a.click()
+    URL.revokeObjectURL(url)
     showToast('📥 Exported to CSV!', 'success')
+  }
+
+  function exportToICalendar() {
+    // Create iCalendar format
+    let ical = 'BEGIN:VCALENDAR\n'
+    ical += 'VERSION:2.0\n'
+    ical += 'PRODID:-//QuickXS//Events Calendar//EN\n'
+    ical += 'CALSCALE:GREGORIAN\n'
+    ical += 'METHOD:PUBLISH\n'
+    ical += 'X-WR-CALNAME:QuickXS Events\n'
+    ical += 'X-WR-TIMEZONE:UTC\n'
+
+    filteredEvents.forEach(event => {
+      const startDateTime = `${event.date.replace(/-/g, '')}T${event.time.replace(':', '')}00`
+      const endDateTime = `${event.date.replace(/-/g, '')}T${event.time.replace(':', '')}00`
+      const uid = `${event.id}@quickxs.app`
+      const timestamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
+
+      ical += 'BEGIN:VEVENT\n'
+      ical += `UID:${uid}\n`
+      ical += `DTSTAMP:${timestamp}\n`
+      ical += `DTSTART:${startDateTime}\n`
+      ical += `DTEND:${endDateTime}\n`
+      ical += `SUMMARY:${event.name}\n`
+      if (event.info) {
+        ical += `DESCRIPTION:${event.info.replace(/\n/g, '\\n')}\n`
+      }
+      ical += `CATEGORIES:${event.event_type}\n`
+      ical += `PRIORITY:${event.priority === 'urgent' ? '1' : event.priority === 'high' ? '3' : event.priority === 'low' ? '7' : '5'}\n`
+      ical += `STATUS:${event.is_completed ? 'COMPLETED' : 'CONFIRMED'}\n`
+      ical += 'END:VEVENT\n'
+    })
+
+    ical += 'END:VCALENDAR'
+
+    const blob = new Blob([ical], { type: 'text/calendar' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `quickxs-events-${new Date().toISOString().split('T')[0]}.ics`
+    a.click()
+    URL.revokeObjectURL(url)
+    showToast('📅 Exported to iCalendar format!', 'success')
+  }
+
+  function exportToGoogleCalendar() {
+    // Google Calendar only allows one event at a time via URL
+    // Export the first upcoming event or show modal to select
+    const upcomingEvent = filteredEvents.find(e => !e.is_completed && new Date(e.date) >= new Date())
+
+    if (!upcomingEvent) {
+      showToast('❌ No upcoming events to export', 'error')
+      return
+    }
+
+    const title = encodeURIComponent(upcomingEvent.name)
+    const details = encodeURIComponent(upcomingEvent.info || '')
+    const dates = `${upcomingEvent.date.replace(/-/g, '')}T${upcomingEvent.time.replace(':', '')}00/${upcomingEvent.date.replace(/-/g, '')}T${upcomingEvent.time.replace(':', '')}00`
+
+    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&dates=${dates}`
+
+    window.open(url, '_blank')
+    showToast('📆 Opening Google Calendar...', 'success')
+  }
+
+  async function importFromCSV(file) {
+    try {
+      const text = await file.text()
+      const lines = text.split('\n').filter(line => line.trim())
+      const headers = lines[0].split(',')
+
+      const imported = []
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',')
+        const event = {
+          name: values[0]?.replace(/^"|"$/g, ''),
+          date: values[1],
+          time: values[2] || '10:00',
+          event_type: values[3] || 'Assignment',
+          priority: values[4] || 'normal',
+          info: values[6]?.replace(/^"|"$/g, '') || '',
+          is_completed: values[5] === 'Completed'
+        }
+
+        if (event.name && event.date) {
+          const { data, error } = await supabase
+            .from('events')
+            .insert([event])
+            .select()
+
+          if (!error && data) {
+            imported.push(data[0])
+          }
+        }
+      }
+
+      await fetchAllData(true)
+      showToast(`✅ Imported ${imported.length} events!`, 'success')
+    } catch (err) {
+      showToast('❌ Import failed: ' + err.message, 'error')
+    }
   }
 
   function getEventTypeIcon(type) {
@@ -796,13 +902,61 @@
           🗑️ Delete
         </button>
       {/if}
+      <!-- Export Dropdown -->
+      <div class="relative">
+        <button
+          onclick={() => showExportMenu = !showExportMenu}
+          class="px-4 py-2 rounded-lg font-semibold transition-all hover:scale-105"
+          style="background-color: var(--color-card); color: var(--color-text); border: 2px solid var(--color-accent);"
+        >
+          📥 Export ▼
+        </button>
+        {#if showExportMenu}
+          <div class="absolute right-0 mt-2 w-48 rounded-lg shadow-2xl z-50" style="background-color: var(--color-card); border: 2px solid var(--color-accent);">
+            <button
+              onclick={() => { exportToCSV(); showExportMenu = false }}
+              class="w-full text-left px-4 py-2 hover:bg-opacity-20 transition-all"
+              style="color: var(--color-text);"
+            >
+              📄 Export as CSV
+            </button>
+            <button
+              onclick={() => { exportToICalendar(); showExportMenu = false }}
+              class="w-full text-left px-4 py-2 hover:bg-opacity-20 transition-all"
+              style="color: var(--color-text);"
+            >
+              📅 Export as iCal
+            </button>
+            <button
+              onclick={() => { exportToGoogleCalendar(); showExportMenu = false }}
+              class="w-full text-left px-4 py-2 hover:bg-opacity-20 transition-all rounded-b-lg"
+              style="color: var(--color-text);"
+            >
+              📆 Add to Google Calendar
+            </button>
+          </div>
+        {/if}
+      </div>
+
+      <!-- Import Button -->
+      <input
+        type="file"
+        accept=".csv"
+        bind:this={fileInputRef}
+        onchange={(e) => {
+          const file = e.target.files?.[0]
+          if (file) importFromCSV(file)
+        }}
+        class="hidden"
+      />
       <button
-        onclick={exportToCSV}
+        onclick={() => fileInputRef?.click()}
         class="px-4 py-2 rounded-lg font-semibold transition-all hover:scale-105"
         style="background-color: var(--color-card); color: var(--color-text); border: 2px solid var(--color-accent);"
       >
-        📥 Export
+        📤 Import CSV
       </button>
+
       <button
         onclick={openAddModal}
         class="px-4 py-2 rounded-lg font-semibold transition-all hover:scale-105"
