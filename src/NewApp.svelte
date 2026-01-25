@@ -14,11 +14,13 @@
   import WeeklyRoutineTable from './components/WeeklyRoutineTable.svelte'
   import InstallPrompt from './components/InstallPrompt.svelte'
   import UpdatePrompt from './components/UpdatePrompt.svelte'
-  import EventsArchive from './components/EventsArchive.svelte'
-  import AdminAuth from './components/AdminAuth.svelte'
   import NotificationSettings from './components/NotificationSettings.svelte'
-  import CalendarView from './components/CalendarView.svelte'
-  import Statistics from './components/Statistics.svelte'
+
+  // Lazy load heavy components (only loaded when needed)
+  const EventsArchive = import('./components/EventsArchive.svelte')
+  const AdminAuth = import('./components/AdminAuth.svelte')
+  const CalendarView = import('./components/CalendarView.svelte')
+  const Statistics = import('./components/Statistics.svelte')
 
   let refreshing = $state(false)
   let showEventsArchive = $state(false)
@@ -250,16 +252,24 @@
     </div>
   {:else if showAdminPanel}
     <!-- Admin Panel Page (with Authentication) -->
-    <AdminAuth />
+    {#await AdminAuth then {default: Component}}
+      <Component />
+    {/await}
   {:else if showCalendar}
     <!-- Calendar View Page -->
-    <CalendarView />
+    {#await CalendarView then {default: Component}}
+      <Component />
+    {/await}
   {:else if showStatistics}
     <!-- Statistics Page -->
-    <Statistics />
+    {#await Statistics then {default: Component}}
+      <Component />
+    {/await}
   {:else if showEventsArchive}
     <!-- Events Archive Page -->
-    <EventsArchive />
+    {#await EventsArchive then {default: Component}}
+      <Component />
+    {/await}
   {:else}
     <!-- Top Row: Hero Card -->
     <div class="mb-6">
