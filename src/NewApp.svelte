@@ -17,6 +17,9 @@
   import NotificationSettings from './components/NotificationSettings.svelte'
   import GlobalSearch from './components/GlobalSearch.svelte'
   import UserSettings from './components/UserSettings.svelte'
+  import CalendarSkeleton from './components/CalendarSkeleton.svelte'
+  import StatisticsSkeleton from './components/StatisticsSkeleton.svelte'
+  import KeyboardShortcuts from './components/KeyboardShortcuts.svelte'
 
   // Lazy load heavy components (only loaded when needed)
   const EventsArchive = import('./components/EventsArchive.svelte')
@@ -273,17 +276,23 @@
     {/await}
   {:else if showCalendar}
     <!-- Calendar View Page -->
-    {#await CalendarView then {default: Component}}
+    {#await CalendarView}
+      <CalendarSkeleton />
+    {:then {default: Component}}
       <Component />
     {/await}
   {:else if showStatistics}
     <!-- Statistics Page -->
-    {#await Statistics then {default: Component}}
+    {#await Statistics}
+      <StatisticsSkeleton />
+    {:then {default: Component}}
       <Component />
     {/await}
   {:else if showEventsArchive}
     <!-- Events Archive Page -->
-    {#await EventsArchive then {default: Component}}
+    {#await EventsArchive}
+      <LoadingSkeleton />
+    {:then {default: Component}}
       <Component />
     {/await}
   {:else}
@@ -354,6 +363,45 @@
 
   <!-- Global Search -->
   <GlobalSearch />
+
+  <!-- Keyboard Shortcuts -->
+  <KeyboardShortcuts
+    onHome={() => {
+      showCalendar = false
+      showEventsArchive = false
+      showStatistics = false
+      showAdminPanel = false
+    }}
+    onCalendar={() => {
+      showCalendar = true
+      showEventsArchive = false
+      showStatistics = false
+      showAdminPanel = false
+    }}
+    onArchive={() => {
+      showEventsArchive = true
+      showCalendar = false
+      showStatistics = false
+      showAdminPanel = false
+    }}
+    onStats={() => {
+      showStatistics = true
+      showCalendar = false
+      showEventsArchive = false
+      showAdminPanel = false
+    }}
+    onAdmin={() => {
+      showAdminPanel = true
+      showCalendar = false
+      showEventsArchive = false
+      showStatistics = false
+    }}
+    onRefresh={handleRefresh}
+    onSettings={() => {
+      // Settings modal is handled by UserSettings component
+      // We could add a prop to open it programmatically
+    }}
+  />
 </div>
 
 <style>
