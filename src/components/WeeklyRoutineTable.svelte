@@ -3,6 +3,16 @@
   import { routines } from '../lib/store'
   import { getCurrentDay, getWeekDays, formatTime, isClassHappeningNow } from '../lib/utils'
   import { currentTheme } from '../lib/themeStore'
+  import { get } from 'svelte/store'
+
+  // In Svelte 5 runes mode, we need to explicitly subscribe to stores
+  let theme = $state(get(currentTheme))
+  $effect(() => {
+    const unsubscribe = currentTheme.subscribe(value => {
+      theme = value
+    })
+    return unsubscribe
+  })
 
   let touchStartX = 0
   let touchEndX = 0
@@ -128,22 +138,22 @@
 </script>
 
 <div class="weekly-routine-table">
-  <h2 class="text-xl font-bold mb-4 flex items-center gap-2" style="color: {$currentTheme.accent};">
+  <h2 class="text-xl font-bold mb-4 flex items-center gap-2" style="color: {theme.accent};">
     📅 Weekly Class Schedule
   </h2>
 
   <!-- Desktop View -->
   <div class="hidden md:block overflow-x-auto">
-    <table class="w-full border-collapse" style="border: 1px solid {$currentTheme.card};">
+    <table class="w-full border-collapse" style="border: 1px solid {theme.card};">
       <thead>
-        <tr style="background-color: {$currentTheme.bg};">
-          <th class="p-3 text-left font-bold sticky left-0 z-[5]" style="background-color: {$currentTheme.bg}; color: {$currentTheme.accent}; border: 1px solid {$currentTheme.card}; min-width: 120px;">
+        <tr style="background-color: {theme.bg};">
+          <th class="p-3 text-left font-bold sticky left-0 z-[5]" style="background-color: {theme.bg}; color: {theme.accent}; border: 1px solid {theme.card}; min-width: 120px;">
             Day / Time
           </th>
           {#each timeSlots as timeSlot}
             <th
               class="p-2 text-center font-semibold text-xs"
-              style="color: {$currentTheme.text}; opacity: 0.8; border: 1px solid {$currentTheme.card}; min-width: 70px;"
+              style="color: {theme.text}; opacity: 0.8; border: 1px solid {theme.card}; min-width: 70px;"
             >
               {formatTime(timeSlot)}
             </th>
@@ -152,13 +162,13 @@
       </thead>
       <tbody>
         {#each getWeekDays() as day, dayIndex}
-          <tr style="background-color: {dayIndex % 2 === 0 ? $currentTheme.bg : $currentTheme.card};">
+          <tr style="background-color: {dayIndex % 2 === 0 ? theme.bg : theme.card};">
             <td
               class="p-3 text-sm font-bold sticky left-0 z-[5]"
               style="
-                background-color: {dayIndex % 2 === 0 ? $currentTheme.bg : $currentTheme.card};
-                color: {day === getCurrentDay() ? $currentTheme.accent : $currentTheme.text};
-                border: 2px solid {day === getCurrentDay() ? $currentTheme.accent : $currentTheme.card};
+                background-color: {dayIndex % 2 === 0 ? theme.bg : theme.card};
+                color: {day === getCurrentDay() ? theme.accent : theme.text};
+                border: 2px solid {day === getCurrentDay() ? theme.accent : theme.card};
                 font-size: 0.875rem;
               "
             >
@@ -180,29 +190,29 @@
                     colspan={span}
                     class="p-3 text-center transition-all cursor-pointer relative group"
                     style="
-                      background-color: {isCurrent ? $currentTheme.accent : $currentTheme.card};
-                      border: 2px solid {isCurrent ? $currentTheme.accent : $currentTheme.accent};
-                      color: {isCurrent ? $currentTheme.bg : $currentTheme.text};
+                      background-color: {isCurrent ? theme.accent : theme.card};
+                      border: 2px solid {isCurrent ? theme.accent : theme.accent};
+                      color: {isCurrent ? theme.bg : theme.text};
                       box-shadow: {isCurrent ? '0 4px 6px rgba(0, 0, 0, 0.3)' : 'none'};
                     "
                   >
                     <div class="font-bold text-sm leading-tight mb-2">{classItem.subject}</div>
                     <div class="flex flex-col gap-1 items-center">
-                      <div class="px-2 py-1 rounded font-bold text-xs" style="background-color: {$currentTheme.bg}; color: {$currentTheme.text};">
+                      <div class="px-2 py-1 rounded font-bold text-xs" style="background-color: {theme.bg}; color: {theme.text};">
                         ⏰ {formatTime(classItem.time)}
                       </div>
-                      <div class="px-2 py-1 rounded font-bold text-xs" style="background-color: {$currentTheme.bg}; color: {$currentTheme.text};">
+                      <div class="px-2 py-1 rounded font-bold text-xs" style="background-color: {theme.bg}; color: {theme.text};">
                         📍 {classItem.classroom}
                       </div>
                     </div>
                     <div class="flex items-center justify-center gap-2 mt-2">
                       {#if classItem.duration >= 150}
-                        <span class="text-xs px-2 py-0.5 rounded font-semibold" style="background-color: {$currentTheme.accent}; color: {$currentTheme.bg};">
+                        <span class="text-xs px-2 py-0.5 rounded font-semibold" style="background-color: {theme.accent}; color: {theme.bg};">
                           Lab
                         </span>
                       {/if}
                       {#if isCurrent}
-                        <span class="text-xs px-2 py-0.5 rounded font-bold animate-pulse" style="background-color: {$currentTheme.bg}; color: {$currentTheme.accent};">
+                        <span class="text-xs px-2 py-0.5 rounded font-bold animate-pulse" style="background-color: {theme.bg}; color: {theme.accent};">
                           NOW
                         </span>
                       {/if}
@@ -212,16 +222,16 @@
                   <td
                     class="p-2 text-center text-xs"
                     style="
-                      background-color: {isBreak ? $currentTheme.bg : 'transparent'};
-                      border: 1px solid {$currentTheme.card};
-                      color: {$currentTheme.text};
+                      background-color: {isBreak ? theme.bg : 'transparent'};
+                      border: 1px solid {theme.card};
+                      color: {theme.text};
                       opacity: {isBreak ? '0.6' : '0.3'};
                     "
                   >
                     {#if isBreak}
                       ☕
                     {:else if isCurrent}
-                      <div class="animate-pulse" style="color: {$currentTheme.accent};">●</div>
+                      <div class="animate-pulse" style="color: {theme.accent};">●</div>
                     {/if}
                   </td>
                 {/if}
@@ -236,7 +246,7 @@
   <!-- Mobile View - Unified Timeline -->
   <div class="md:hidden">
     <!-- Day Selector (Sticky) -->
-    <div class="sticky top-0 z-[5] -mx-6 px-6 pb-3" style="background-color: {$currentTheme.card}; border-bottom: 1px solid {$currentTheme.bg};">
+    <div class="sticky top-0 z-[5] -mx-6 px-6 pb-3" style="background-color: {theme.card}; border-bottom: 1px solid {theme.bg};">
       <div class="flex overflow-x-auto gap-2 pb-2" style="-webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory;">
         {#each getWeekDays() as day}
           {@const isToday = day === getCurrentDay()}
@@ -244,9 +254,9 @@
           <button
             class="flex-shrink-0 px-4 py-2 rounded-lg font-bold text-sm transition-all"
             style="
-              background-color: {isToday ? $currentTheme.accent : $currentTheme.bg};
-              color: {isToday ? $currentTheme.bg : $currentTheme.text};
-              border: 2px solid {isToday ? $currentTheme.accent : $currentTheme.card};
+              background-color: {isToday ? theme.accent : theme.bg};
+              color: {isToday ? theme.bg : theme.text};
+              border: 2px solid {isToday ? theme.accent : theme.card};
               box-shadow: {isToday ? '0 2px 8px rgba(0, 0, 0, 0.4)' : 'none'};
               scroll-snap-align: center;
             "
@@ -272,27 +282,27 @@
         <div class="relative" id="day-{day}">
           <!-- Day Header -->
           <div class="flex items-center gap-2 mb-3 pb-2">
-            <div class="flex items-center gap-2 px-3 py-2 rounded-lg" style="background-color: {isToday ? $currentTheme.accent : $currentTheme.bg}; color: {isToday ? $currentTheme.bg : $currentTheme.text}; border: 2px solid {isToday ? $currentTheme.accent : $currentTheme.card};">
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg" style="background-color: {isToday ? theme.accent : theme.bg}; color: {isToday ? theme.bg : theme.text}; border: 2px solid {isToday ? theme.accent : theme.card};">
               <span class="font-bold text-base">{day}</span>
               {#if isToday}
                 <span class="text-sm">●</span>
               {/if}
             </div>
-            <div class="h-px flex-1" style="background-color: {$currentTheme.card};"></div>
+            <div class="h-px flex-1" style="background-color: {theme.card};"></div>
           </div>
 
           {#if dayClasses.length === 0}
-            <div class="text-center py-8 px-4 rounded-lg" style="background-color: {$currentTheme.bg}; border: 2px dashed {$currentTheme.card};">
-              <div class="inline-block p-4 rounded-full mb-3" style="background-color: {$currentTheme.card};">
+            <div class="text-center py-8 px-4 rounded-lg" style="background-color: {theme.bg}; border: 2px dashed {theme.card};">
+              <div class="inline-block p-4 rounded-full mb-3" style="background-color: {theme.card};">
                 <span class="text-4xl">🌴</span>
               </div>
-              <p class="text-sm font-semibold" style="color: {$currentTheme.text}; opacity: 0.5;">No classes scheduled</p>
+              <p class="text-sm font-semibold" style="color: {theme.text}; opacity: 0.5;">No classes scheduled</p>
             </div>
           {:else}
             <!-- Timeline -->
             <div class="relative pl-6">
               <!-- Vertical Line -->
-              <div class="absolute left-2 top-0 bottom-0 w-0.5" style="background-color: {isToday ? $currentTheme.accent : $currentTheme.card};"></div>
+              <div class="absolute left-2 top-0 bottom-0 w-0.5" style="background-color: {isToday ? theme.accent : theme.card};"></div>
 
               <div class="space-y-4">
                 {#each dayClasses as classItem, idx}
@@ -304,7 +314,7 @@
                     <div
                       class="absolute -left-5 top-3 w-3 h-3 rounded-full"
                       style="
-                        background-color: {isCurrent ? $currentTheme.accent : isToday ? $currentTheme.accent : $currentTheme.card};
+                        background-color: {isCurrent ? theme.accent : isToday ? theme.accent : theme.card};
                         box-shadow: {isCurrent ? '0 0 0 4px rgba(0, 0, 0, 0.2)' : 'none'};
                       "
                     ></div>
@@ -313,9 +323,9 @@
                     <div
                       class="p-3 rounded-lg transition-all"
                       style="
-                        background-color: {isCurrent ? $currentTheme.accent : $currentTheme.card};
-                        border: 2px solid {isCurrent ? $currentTheme.accent : isToday ? $currentTheme.accent : $currentTheme.card};
-                        color: {isCurrent ? $currentTheme.bg : $currentTheme.text};
+                        background-color: {isCurrent ? theme.accent : theme.card};
+                        border: 2px solid {isCurrent ? theme.accent : isToday ? theme.accent : theme.card};
+                        color: {isCurrent ? theme.bg : theme.text};
                         box-shadow: {isCurrent ? '0 4px 12px rgba(0, 0, 0, 0.3)' : '0 2px 6px rgba(0, 0, 0, 0.2)'};
                       "
                     >
@@ -323,12 +333,12 @@
                         <h4 class="font-bold text-base flex-1">{classItem.subject}</h4>
                         <div class="flex flex-col gap-1 items-end flex-shrink-0">
                           {#if isLab}
-                            <span class="text-xs px-2 py-0.5 rounded font-semibold" style="background-color: {$currentTheme.accent}; color: {$currentTheme.bg};">
+                            <span class="text-xs px-2 py-0.5 rounded font-semibold" style="background-color: {theme.accent}; color: {theme.bg};">
                               Lab
                             </span>
                           {/if}
                           {#if isCurrent}
-                            <span class="text-xs px-2 py-0.5 rounded font-bold animate-pulse" style="background-color: {$currentTheme.bg}; color: {$currentTheme.accent};">
+                            <span class="text-xs px-2 py-0.5 rounded font-bold animate-pulse" style="background-color: {theme.bg}; color: {theme.accent};">
                               NOW
                             </span>
                           {/if}
@@ -336,21 +346,21 @@
                       </div>
 
                       <div class="flex flex-wrap gap-2 mb-2">
-                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-bold" style="background-color: {$currentTheme.bg}; color: {$currentTheme.text};">
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-bold" style="background-color: {theme.bg}; color: {theme.text};">
                           <span>⏰</span>
                           <span>{formatTime(classItem.time)}</span>
                         </div>
-                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-bold" style="background-color: {$currentTheme.bg}; color: {$currentTheme.text};">
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-bold" style="background-color: {theme.bg}; color: {theme.text};">
                           <span>📍</span>
                           <span>{classItem.classroom}</span>
                         </div>
-                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs" style="background-color: {$currentTheme.bg}; color: {$currentTheme.textSecondary};">
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs" style="background-color: {theme.bg}; color: {theme.textSecondary};">
                           <span>⏱️</span>
                           <span>{classItem.duration} min</span>
                         </div>
                       </div>
 
-                      <div class="text-sm" style="color: {$currentTheme.textSecondary};">
+                      <div class="text-sm" style="color: {theme.textSecondary};">
                         👨‍🏫 {classItem.teacher}
                       </div>
                     </div>
@@ -367,20 +377,20 @@
   <!-- Legend -->
   <div class="hidden md:flex flex-wrap gap-4 mt-4 text-sm">
     <div class="flex items-center gap-2">
-      <div class="w-4 h-4 rounded" style="background-color: {$currentTheme.card}; border: 2px solid {$currentTheme.accent};"></div>
-      <span style="color: {$currentTheme.text}; opacity: 0.8;">Regular Class</span>
+      <div class="w-4 h-4 rounded" style="background-color: {theme.card}; border: 2px solid {theme.accent};"></div>
+      <span style="color: {theme.text}; opacity: 0.8;">Regular Class</span>
     </div>
     <div class="flex items-center gap-2">
-      <div class="w-4 h-4 rounded" style="background-color: {$currentTheme.bg}; border: 2px solid {$currentTheme.accent};"></div>
-      <span style="color: {$currentTheme.text}; opacity: 0.8;">Lab Class</span>
+      <div class="w-4 h-4 rounded" style="background-color: {theme.bg}; border: 2px solid {theme.accent};"></div>
+      <span style="color: {theme.text}; opacity: 0.8;">Lab Class</span>
     </div>
     <div class="flex items-center gap-2">
-      <div class="w-4 h-4 rounded" style="background-color: {$currentTheme.accent};"></div>
-      <span style="color: {$currentTheme.text}; opacity: 0.8;">Current Class</span>
+      <div class="w-4 h-4 rounded" style="background-color: {theme.accent};"></div>
+      <span style="color: {theme.text}; opacity: 0.8;">Current Class</span>
     </div>
     <div class="flex items-center gap-2">
-      <div class="w-4 h-4 rounded" style="background-color: {$currentTheme.bg}; opacity: 0.6;"></div>
-      <span style="color: {$currentTheme.text}; opacity: 0.8;">Break Time</span>
+      <div class="w-4 h-4 rounded" style="background-color: {theme.bg}; opacity: 0.6;"></div>
+      <span style="color: {theme.text}; opacity: 0.8;">Break Time</span>
     </div>
   </div>
 </div>
