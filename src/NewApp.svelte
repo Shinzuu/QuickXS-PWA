@@ -38,8 +38,8 @@
   let notificationsEnabled = $state(false)
 
   // Component references
-  let globalSearchComponent
-  let notificationSettingsComponent
+  let globalSearchComponent = $state(null)
+  let notificationSettingsComponent = $state(null)
 
   onMount(async () => {
     // Load cached data immediately for instant display (non-blocking)

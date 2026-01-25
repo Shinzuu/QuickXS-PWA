@@ -25,8 +25,14 @@ const loadSettings = () => {
 
 export const notificationSettings = writable(loadSettings())
 
-// Subscribe to save to localStorage
+// Subscribe to save to localStorage - skip first run to avoid loop
+let isFirstRun = true
 notificationSettings.subscribe(settings => {
+  if (isFirstRun) {
+    isFirstRun = false
+    return
+  }
+
   try {
     localStorage.setItem('notificationSettings', JSON.stringify(settings))
   } catch (e) {

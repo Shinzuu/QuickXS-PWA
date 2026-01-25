@@ -1,5 +1,4 @@
 <script>
-  import { onMount } from 'svelte'
   import { useRegisterSW } from 'virtual:pwa-register/svelte'
   import { toasts } from '../lib/toastStore'
 
@@ -22,28 +21,33 @@
     immediate: true,
   })
 
-  let hasShownUpdateNotice = false
-  let isUpdating = false
+  let hasShownOffline = $state(false)
+  let hasStartedUpdate = $state(false)
 
-  // Show offline ready notification
-  $: if ($offlineReady && !hasShownUpdateNotice) {
-    toasts.add('App ready to work offline!', 'success', '✅ Offline Ready', 2000)
-    hasShownUpdateNotice = true
-  }
+  // Show offline ready notification (runs once)
+  $effect(() => {
+    if ($offlineReady && !hasShownOffline) {
+      hasShownOffline = true
+      toasts.add('App ready to work offline!', 'success', '✅ Offline Ready', 2000)
+    }
+  })
 
-  // Auto-update when new version is available
-  $: if ($needRefresh && !isUpdating) {
-    isUpdating = true
-    console.log('New version detected! Auto-updating...')
-    toasts.add('New version available! Updating now...', 'info', '🔄 Updating', 2000)
-    setTimeout(async () => {
-      await updateServiceWorker(true)
-      toasts.add('Update complete! Reloading...', 'success', '✅ Updated', 1000)
-      setTimeout(() => {
-        window.location.reload()
-      }, 1000)
-    }, 500)
-  }
+  // Auto-update when new version is available (runs once)
+  $effect(() => {
+    if ($needRefresh && !hasStartedUpdate) {
+      hasStartedUpdate = true
+      console.log('New version detected! Auto-updating...')
+      toasts.add('New version available! Updating now...', 'info', '🔄 Updating', 2000)
+
+      setTimeout(async () => {
+        await updateServiceWorker(true)
+        toasts.add('Update complete! Reloading...', 'success', '✅ Updated', 1000)
+        setTimeout(() => {
+          window.location.reload()
+        }, 1000)
+      }, 500)
+    }
+  })
 </script>
 
 <!-- No UI needed - updates happen automatically with toast notifications -->
