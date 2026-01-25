@@ -405,23 +405,11 @@
 </div>
 
 <style>
+  /* === Animations === */
   @keyframes spin {
     to {
       transform: rotate(360deg);
     }
-  }
-
-  .animate-spin {
-    animation: spin 1s linear infinite;
-  }
-
-  .card-container {
-    transition: all 0.3s ease;
-  }
-
-  .card-container:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 173, 181, 0.2) !important;
   }
 
   @keyframes fadeIn {
@@ -435,13 +423,95 @@
     }
   }
 
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  /* === Animation Classes === */
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.4s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out;
+  }
+
+  .animate-pulse {
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  /* === Card Styles === */
   .card-container {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     animation: fadeIn 0.5s ease-out;
   }
 
-  .card-container:nth-child(1) { animation-delay: 0.1s; }
-  .card-container:nth-child(2) { animation-delay: 0.2s; }
-  .card-container:nth-child(3) { animation-delay: 0.3s; }
+  .card-container:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 24px rgba(0, 173, 181, 0.3) !important;
+  }
+
+  /* === Staggered Animations === */
+  .card-container:nth-child(1) { animation-delay: 0.05s; }
+  .card-container:nth-child(2) { animation-delay: 0.1s; }
+  .card-container:nth-child(3) { animation-delay: 0.15s; }
+  .card-container:nth-child(4) { animation-delay: 0.2s; }
+  .card-container:nth-child(5) { animation-delay: 0.25s; }
+
+  /* === Button Effects === */
+  button {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  button:active {
+    transform: scale(0.97);
+  }
+
+  /* === Smooth Scroll === */
+  * {
+    scroll-behavior: smooth;
+  }
+
+  /* === Focus Styles === */
+  *:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
 </style>
 {/if}
 
