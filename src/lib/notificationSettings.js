@@ -6,7 +6,8 @@ const loadSettings = () => {
     const saved = localStorage.getItem('notificationSettings')
     return saved ? JSON.parse(saved) : {
       enabled: true,
-      timings: [10, 2], // Minutes before class
+      classReminderMinutes: 5, // Minutes before class
+      eventReminderMinutes: 1440, // Minutes before event (1 day = 1440 mins)
       sound: true,
       vibrate: true
     }
@@ -14,7 +15,8 @@ const loadSettings = () => {
     console.error('Failed to load notification settings:', e)
     return {
       enabled: true,
-      timings: [10, 2],
+      classReminderMinutes: 5,
+      eventReminderMinutes: 1440,
       sound: true,
       vibrate: true
     }
