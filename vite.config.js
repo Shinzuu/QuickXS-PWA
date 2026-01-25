@@ -2,6 +2,9 @@ import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import { VitePWA } from 'vite-plugin-pwa'
 
+// Generate unique build ID for cache busting
+const buildId = Date.now().toString()
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -102,7 +105,7 @@ export default defineConfig({
             urlPattern: /^https:\/\/gymdfwvseuhsusyfsnpb\.supabase\.co\/.*/i,
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'supabase-cache',
+              cacheName: `supabase-cache-${buildId}`,
               expiration: {
                 maxEntries: 10,
                 maxAgeSeconds: 60 * 60 * 24 // 24 hours
@@ -116,7 +119,7 @@ export default defineConfig({
             urlPattern: /\/widget-data\.json$/,
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'widget-data-cache',
+              cacheName: `widget-data-cache-${buildId}`,
               expiration: {
                 maxEntries: 1,
                 maxAgeSeconds: 60 // 1 minute
