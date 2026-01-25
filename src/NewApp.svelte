@@ -163,16 +163,14 @@
 {:else}
 <div class="app min-h-screen p-3" style="background-color: {$currentTheme.bg};">
   <!-- Navigation Bar -->
-  <div class="mb-6 p-4 rounded-lg" style="background-color: {$currentTheme.card}; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);">
-    <!-- Header Row -->
-    <div class="flex items-center justify-between mb-3">
-      <h1 class="text-2xl font-bold" style="color: {$currentTheme.accent};">QuickXS</h1>
-    </div>
+  <div class="mb-6 p-4 rounded-lg flex items-start justify-between gap-4" style="background-color: {$currentTheme.card}; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);">
+    <!-- Logo -->
+    <h1 class="text-2xl font-bold flex-shrink-0" style="color: {$currentTheme.accent};">QuickXS</h1>
 
     <!-- Navigation Icons - 2 Rows -->
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2 flex-1">
       <!-- Row 1: Main Navigation -->
-      <div class="flex gap-2 justify-center flex-wrap">
+      <div class="flex gap-2 justify-end flex-wrap">
         <button
           onclick={() => {
             showCalendar = false
@@ -234,7 +232,7 @@
       </div>
 
       <!-- Row 2: Utility Navigation -->
-      <div class="flex gap-2 justify-center flex-wrap">
+      <div class="flex gap-2 justify-end flex-wrap">
         <button
           onclick={() => {
             showAdminPanel = !showAdminPanel
