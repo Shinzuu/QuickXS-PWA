@@ -27,17 +27,12 @@
       }
     }
   })
-</script>
 
-<!-- Floating Settings Button -->
-<button
-  onclick={openSettings}
-  class="fixed bottom-6 right-6 p-4 rounded-full shadow-2xl transition-all hover:scale-110 z-40"
-  style="background-color: var(--color-accent); color: var(--color-bg);"
-  title="Notification Settings"
->
-  🔔
-</button>
+  // Export function to allow parent to open settings
+  export function open() {
+    openSettings()
+  }
+</script>
 
 <!-- Settings Modal -->
 {#if showSettings}

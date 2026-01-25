@@ -37,6 +37,10 @@
   let isPulling = $state(false)
   let notificationsEnabled = $state(false)
 
+  // Component references
+  let globalSearchComponent
+  let notificationSettingsComponent
+
   onMount(async () => {
     // Load cached data immediately for instant display (non-blocking)
     loadCachedData()
@@ -235,6 +239,14 @@
       >
         🔧
       </button>
+      <button
+        onclick={() => globalSearchComponent?.open()}
+        class="px-3 py-2 rounded-lg font-semibold transition-all hover:opacity-90"
+        style="background-color: {$currentTheme.bg}; color: {$currentTheme.accent}; border: 2px solid {$currentTheme.accent};"
+        title="Search (Ctrl+K)"
+      >
+        🔍
+      </button>
       <UserSettings />
     </div>
   </div>
@@ -321,8 +333,8 @@
       </div>
     </div>
 
-    <!-- Notification Settings (Floating Button) -->
-    <NotificationSettings />
+    <!-- Notification Settings -->
+    <NotificationSettings bind:this={notificationSettingsComponent} />
 
     <!-- Quick Links Section -->
     <div class="mb-6">
@@ -362,7 +374,7 @@
   <UpdatePrompt />
 
   <!-- Global Search -->
-  <GlobalSearch />
+  <GlobalSearch bind:this={globalSearchComponent} />
 
   <!-- Keyboard Shortcuts -->
   <KeyboardShortcuts

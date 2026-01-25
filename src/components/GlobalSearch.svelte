@@ -128,19 +128,12 @@
     window.addEventListener('keydown', handleKeydown)
     return () => window.removeEventListener('keydown', handleKeydown)
   })
-</script>
 
-<!-- Search Button -->
-<button
-  onclick={() => showSearch = true}
-  class="fixed bottom-20 right-4 z-50 p-4 rounded-full shadow-2xl transition-all hover:scale-110"
-  style="background-color: {$currentTheme.accent}; color: {$currentTheme.bg};"
-  title="Search (Ctrl+K)"
->
-  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-  </svg>
-</button>
+  // Export function to allow parent to open search
+  export function open() {
+    showSearch = true
+  }
+</script>
 
 <!-- Search Modal -->
 {#if showSearch}
