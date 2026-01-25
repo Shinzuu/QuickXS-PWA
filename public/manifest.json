@@ -1,13 +1,15 @@
 {
-  "name": "QuickXS - Student Schedule Manager",
+  "name": "QuickXS - Student Schedule Manager & Class Planner",
   "short_name": "QuickXS",
-  "description": "A modern PWA for managing your class schedule with real-time updates",
+  "description": "Modern Progressive Web App for students to manage class schedules, track assignments, organize events, and plan study sessions. Features include real-time schedule updates, event tracking, study links, offline support, and 7 beautiful themes. Perfect for students, teachers, and academic planning.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "theme_color": "#00ADB5",
   "background_color": "#222831",
+  "lang": "en-US",
+  "dir": "ltr",
   "icons": [
     {
       "src": "/favicon_io/android-chrome-192x192.png",
@@ -22,6 +24,8 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["education", "productivity", "lifestyle"],
-  "screenshots": []
+  "categories": ["education", "productivity", "lifestyle", "utilities"],
+  "keywords": ["schedule", "student", "class", "planner", "organizer", "PWA", "assignment", "tracker", "calendar", "timetable", "academic", "school", "college", "study", "PUIC", "QuickXS"],
+  "screenshots": [],
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7"
 }
