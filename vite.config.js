@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [
     svelte(),
     VitePWA({
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       includeAssets: ['favicon_io/*.png', 'favicon_io/*.ico', 'widgets/*.html'],
       devOptions: {
         enabled: false
@@ -93,6 +93,9 @@ export default defineConfig({
         ]
       },
       workbox: {
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2,json}'],
         runtimeCaching: [
           {
