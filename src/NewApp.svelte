@@ -4,6 +4,7 @@
   import { requestNotificationPermission, scheduleClassNotifications, scheduleEventNotifications, scheduleDailySummary } from './lib/notifications'
   import { currentTheme } from './lib/themeStore'
   import { initWidgetService } from './lib/widgetService'
+  import ErrorBoundary from './components/ErrorBoundary.svelte'
   import HeroCard from './components/HeroCard.svelte'
   import TodayClasses from './components/TodayClasses.svelte'
   import EventsTimeline from './components/EventsTimeline.svelte'
@@ -126,6 +127,7 @@
   }
 </script>
 
+<ErrorBoundary>
 <div class="app min-h-screen p-3" style="background-color: {$currentTheme.bg};">
   <!-- Navigation Bar -->
   <div class="flex items-center justify-between mb-6 p-4 rounded-lg" style="background-color: {$currentTheme.card}; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);">
@@ -342,3 +344,4 @@
   .card-container:nth-child(2) { animation-delay: 0.2s; }
   .card-container:nth-child(3) { animation-delay: 0.3s; }
 </style>
+</ErrorBoundary>

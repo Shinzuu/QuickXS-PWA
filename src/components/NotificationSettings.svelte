@@ -45,6 +45,11 @@
     class="fixed inset-0 flex items-center justify-center p-4"
     style="z-index: 9999;"
     onclick={closeSettings}
+    onkeydown={(e) => e.key === 'Escape' && closeSettings()}
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="settings-modal-title"
+    tabindex="-1"
   >
     <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
 
@@ -52,9 +57,11 @@
       class="relative z-10 w-full max-w-md rounded-2xl p-6 shadow-2xl"
       style="background-color: var(--color-card);"
       onclick={(e) => e.stopPropagation()}
+      onkeydown={(e) => e.stopPropagation()}
+      role="document"
     >
       <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-bold" style="color: var(--color-accent);">🔔 Notifications</h2>
+        <h2 id="settings-modal-title" class="text-2xl font-bold" style="color: var(--color-accent);">🔔 Notifications</h2>
         <button onclick={closeSettings} class="text-2xl" style="color: var(--color-text);">✕</button>
       </div>
 

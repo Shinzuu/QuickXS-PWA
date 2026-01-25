@@ -124,8 +124,9 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <!-- Type Filter -->
       <div>
-        <label class="block text-sm font-semibold mb-2" style="color: {$currentTheme.text};">Event Type</label>
+        <label for="event-type-filter" class="block text-sm font-semibold mb-2" style="color: {$currentTheme.text};">Event Type</label>
         <select
+          id="event-type-filter"
           bind:value={filterType}
           class="w-full p-2 rounded-lg"
           style="background-color: {$currentTheme.bg}; color: {$currentTheme.text}; border: 2px solid {$currentTheme.accent};"
@@ -139,8 +140,9 @@
 
       <!-- Status Filter -->
       <div>
-        <label class="block text-sm font-semibold mb-2" style="color: {$currentTheme.text};">Status</label>
+        <label for="status-filter" class="block text-sm font-semibold mb-2" style="color: {$currentTheme.text};">Status</label>
         <select
+          id="status-filter"
           bind:value={filterStatus}
           class="w-full p-2 rounded-lg"
           style="background-color: {$currentTheme.bg}; color: {$currentTheme.text}; border: 2px solid {$currentTheme.accent};"
@@ -153,9 +155,10 @@
 
       <!-- Sort Options -->
       <div>
-        <label class="block text-sm font-semibold mb-2" style="color: {$currentTheme.text};">Sort By</label>
+        <label for="sort-by-filter" class="block text-sm font-semibold mb-2" style="color: {$currentTheme.text};">Sort By</label>
         <div class="flex gap-2">
           <select
+            id="sort-by-filter"
             bind:value={sortBy}
             class="flex-1 p-2 rounded-lg"
             style="background-color: {$currentTheme.bg}; color: {$currentTheme.text}; border: 2px solid {$currentTheme.accent};"
@@ -278,6 +281,7 @@
     role="dialog"
     aria-modal="true"
     aria-labelledby="event-modal-title"
+    tabindex="-1"
   >
     <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
 
@@ -285,6 +289,8 @@
       class="relative z-10 w-full max-w-lg rounded-2xl p-6 shadow-2xl"
       style="background-color: {$currentTheme.card};"
       onclick={(e) => e.stopPropagation()}
+      onkeydown={(e) => e.stopPropagation()}
+      role="document"
     >
       <!-- Header -->
       <div class="flex items-start justify-between mb-4">

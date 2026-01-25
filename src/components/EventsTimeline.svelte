@@ -214,6 +214,7 @@
     role="dialog"
     aria-modal="true"
     aria-labelledby="event-modal-title"
+    tabindex="-1"
   >
     <!-- Backdrop -->
     <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
@@ -224,6 +225,7 @@
       style="background-color: var(--color-card);"
       onclick={(e) => e.stopPropagation()}
       onkeydown={(e) => e.stopPropagation()}
+      role="document"
     >
       <!-- Header -->
       <div class="flex items-start justify-between mb-4">

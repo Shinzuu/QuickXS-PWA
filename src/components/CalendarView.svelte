@@ -218,6 +218,11 @@
     class="fixed inset-0 flex items-center justify-center p-4"
     style="z-index: 9999;"
     onclick={closeDayModal}
+    onkeydown={(e) => e.key === 'Escape' && closeDayModal()}
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="calendar-modal-title"
+    tabindex="-1"
   >
     <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
 
@@ -225,11 +230,13 @@
       class="relative z-10 w-full max-w-2xl max-h-[80vh] overflow-y-auto rounded-2xl p-6 shadow-2xl"
       style="background-color: var(--color-card);"
       onclick={(e) => e.stopPropagation()}
+      onkeydown={(e) => e.stopPropagation()}
+      role="document"
     >
       <!-- Header -->
       <div class="flex items-start justify-between mb-6">
         <div>
-          <h2 class="text-2xl font-bold mb-1" style="color: var(--color-accent);">
+          <h2 id="calendar-modal-title" class="text-2xl font-bold mb-1" style="color: var(--color-accent);">
             {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
           </h2>
           <p class="text-sm" style="color: var(--color-text); opacity: 0.7;">

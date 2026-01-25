@@ -59,11 +59,14 @@
     role="dialog"
     aria-modal="true"
     aria-labelledby="notes-modal-title"
+    tabindex="-1"
   >
     <div
       class="modal-content rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
       style="background-color: {$currentTheme.card}; color: {$currentTheme.text}; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);"
       onclick={(e) => e.stopPropagation()}
+      onkeydown={(e) => e.stopPropagation()}
+      role="document"
     >
       <!-- Header -->
       <div class="flex items-center justify-between mb-6">

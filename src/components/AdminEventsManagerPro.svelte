@@ -976,8 +976,9 @@
       <form onsubmit={(e) => { e.preventDefault(); showAddModal ? handleAdd() : handleUpdate() }} class="space-y-4">
         <!-- Event Name with Auto-suggestions -->
         <div class="relative">
-          <label class="block text-sm font-semibold mb-2" style="color: var(--color-text);">Event Name *</label>
+          <label for="event-name-input" class="block text-sm font-semibold mb-2" style="color: var(--color-text);">Event Name *</label>
           <input
+            id="event-name-input"
             type="text"
             bind:value={eventForm.name}
             oninput={() => {
@@ -1009,14 +1010,15 @@
 
         <!-- Date with DatePicker Widget -->
         <div>
-          <label class="block text-sm font-semibold mb-2" style="color: var(--color-text);">Date *</label>
-          <DatePickerWidget bind:value={eventForm.date} onSelect={(date) => { eventForm.date = date; handleFormChange() }} />
+          <label for="event-date-input" class="block text-sm font-semibold mb-2" style="color: var(--color-text);">Date *</label>
+          <DatePickerWidget id="event-date-input" bind:value={eventForm.date} onSelect={(date) => { eventForm.date = date; handleFormChange() }} />
         </div>
 
         <!-- Time -->
         <div>
-          <label class="block text-sm font-semibold mb-2" style="color: var(--color-text);">Time *</label>
+          <label for="event-time-input" class="block text-sm font-semibold mb-2" style="color: var(--color-text);">Time *</label>
           <input
+            id="event-time-input"
             type="time"
             bind:value={eventForm.time}
             oninput={handleFormChange}
@@ -1029,8 +1031,9 @@
         <!-- Type and Priority -->
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-semibold mb-2" style="color: var(--color-text);">Event Type *</label>
+            <label for="event-type-select" class="block text-sm font-semibold mb-2" style="color: var(--color-text);">Event Type *</label>
             <select
+              id="event-type-select"
               bind:value={eventForm.event_type}
               onchange={handleFormChange}
               class="w-full p-3 rounded-lg"
@@ -1042,8 +1045,9 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm font-semibold mb-2" style="color: var(--color-text);">Priority</label>
+            <label for="event-priority-select" class="block text-sm font-semibold mb-2" style="color: var(--color-text);">Priority</label>
             <select
+              id="event-priority-select"
               bind:value={eventForm.priority}
               onchange={handleFormChange}
               class="w-full p-3 rounded-lg"
@@ -1058,8 +1062,9 @@
 
         <!-- Additional Info -->
         <div>
-          <label class="block text-sm font-semibold mb-2" style="color: var(--color-text);">Additional Information</label>
+          <label for="event-info-textarea" class="block text-sm font-semibold mb-2" style="color: var(--color-text);">Additional Information</label>
           <textarea
+            id="event-info-textarea"
             bind:value={eventForm.info}
             oninput={handleFormChange}
             placeholder="Optional details..."
