@@ -1,6 +1,7 @@
 <script>
   import { upcomingEvents } from '../lib/store'
   import { getDaysUntil, formatDate, formatCountdown, isEventUrgent, formatTime } from '../lib/utils'
+  import EmptyState from './EmptyState.svelte'
 
   let showAll = $state(false)
   let filterType = $state('all') // 'all', 'CT', 'Mid', 'Assignment', 'Lab'

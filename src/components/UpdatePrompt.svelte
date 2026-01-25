@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte'
   import { useRegisterSW } from 'virtual:pwa-register/svelte'
+  import { toasts } from '../lib/toastStore'
 
   const {
     needRefresh,
@@ -8,17 +9,40 @@
   } = useRegisterSW({
     onRegistered(r) {
       console.log('SW Registered:', r)
+      // Check for updates every hour
+      setInterval(() => {
+        r?.update()
+      }, 60 * 60 * 1000)
     },
     onRegisterError(error) {
       console.log('SW registration error', error)
     },
   })
 
+  let autoUpdateTimer = null
+
+  // When update is available, show notification and auto-update after 3 seconds
+  $: if ($needRefresh && !autoUpdateTimer) {
+    toasts.add('New version available! Updating in 3 seconds...', 'info', '🔄 Update', 3000)
+    autoUpdateTimer = setTimeout(async () => {
+      await updateServiceWorker(true)
+      toasts.add('App updated successfully! Reloading...', 'success', '✅ Updated', 2000)
+    }, 3000)
+  }
+
   function close() {
+    if (autoUpdateTimer) {
+      clearTimeout(autoUpdateTimer)
+      autoUpdateTimer = null
+    }
     $needRefresh = false
   }
 
   async function updateNow() {
+    if (autoUpdateTimer) {
+      clearTimeout(autoUpdateTimer)
+      autoUpdateTimer = null
+    }
     await updateServiceWorker(true)
   }
 </script>

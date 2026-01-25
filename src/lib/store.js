@@ -10,6 +10,7 @@ export const links = writable([])
 
 // UI state
 export const isLoading = writable(false)
+export const initialLoad = writable(true) // For showing skeleton on first load
 export const isOffline = writable(!navigator.onLine)
 export const lastUpdated = writable(null)
 export const focusMode = writable(false)
@@ -138,6 +139,7 @@ export async function fetchAllData(showLoadingIndicator = false) {
       fetchEvents(),
       fetchLinks()
     ])
+    initialLoad.set(false) // Data loaded, hide skeleton
   } finally {
     isLoading.set(false)
   }
@@ -162,6 +164,11 @@ export async function loadCachedData() {
   if (cachedEvents.length > 0) events.set(cachedEvents)
   if (cachedLinks.length > 0) links.set(cachedLinks)
   if (lastUpdate) lastUpdated.set(lastUpdate)
+
+  // If we have cached data, hide skeleton immediately
+  if (cachedRoutines.length > 0 || cachedEvents.length > 0) {
+    initialLoad.set(false)
+  }
 }
 
 // Listen to online/offline events

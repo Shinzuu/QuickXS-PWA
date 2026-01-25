@@ -115,11 +115,11 @@
       if (diff > 0 && selectedDayIndex < getWeekDays().length - 1) {
         // Swipe left - next day
         selectedDayIndex++
-        document.getElementById(`day-${getWeekDays()[selectedDayIndex]}`).scrollIntoView({ behavior: 'smooth', block: 'start' })
+        document.getElementById(`day-${getWeekDays()[selectedDayIndex]}`).scrollIntoView({ behavior: 'instant', block: 'start' })
       } else if (diff < 0 && selectedDayIndex > 0) {
         // Swipe right - previous day
         selectedDayIndex--
-        document.getElementById(`day-${getWeekDays()[selectedDayIndex]}`).scrollIntoView({ behavior: 'smooth', block: 'start' })
+        document.getElementById(`day-${getWeekDays()[selectedDayIndex]}`).scrollIntoView({ behavior: 'instant', block: 'start' })
       }
     }
   }
@@ -266,7 +266,7 @@
               scroll-snap-align: center;
             "
             onclick={() => {
-              document.getElementById(`day-${day}`).scrollIntoView({ behavior: 'smooth', block: 'start' })
+              document.getElementById(`day-${day}`).scrollIntoView({ behavior: 'instant', block: 'start' })
             }}
           >
             <div class="flex flex-col items-center gap-1">

@@ -3,6 +3,7 @@
   import { currentTheme } from '../lib/themeStore'
   import { classNotes } from '../lib/notesStore'
   import ClassNotesModal from './ClassNotesModal.svelte'
+  import EmptyState from './EmptyState.svelte'
   import {
     formatTime,
     isClassHappeningNow,

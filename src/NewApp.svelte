@@ -1,10 +1,12 @@
 <script>
   import { onMount } from 'svelte'
-  import { loadCachedData, fetchAllData, isLoading, todayClasses, upcomingEvents, events } from './lib/store'
+  import { loadCachedData, fetchAllData, isLoading, initialLoad, todayClasses, upcomingEvents, events } from './lib/store'
   import { requestNotificationPermission, scheduleClassNotifications, scheduleEventNotifications, scheduleDailySummary } from './lib/notifications'
   import { currentTheme } from './lib/themeStore'
   import { initWidgetService } from './lib/widgetService'
   import ErrorBoundary from './components/ErrorBoundary.svelte'
+  import LoadingSkeleton from './components/LoadingSkeleton.svelte'
+  import Toast from './components/Toast.svelte'
   import HeroCard from './components/HeroCard.svelte'
   import TodayClasses from './components/TodayClasses.svelte'
   import EventsTimeline from './components/EventsTimeline.svelte'
@@ -29,34 +31,51 @@
   let notificationsEnabled = $state(false)
 
   onMount(async () => {
-    // Load cached data immediately for instant display
-    await loadCachedData()
+    // Load cached data immediately for instant display (non-blocking)
+    loadCachedData()
 
-    // Then fetch fresh data from Supabase
-    await fetchAllData()
+    // Fetch fresh data in background (don't await)
+    fetchAllData()
 
-    // Initialize widget service for PWA widgets
-    initWidgetService()
+    // Defer non-critical tasks to when browser is idle
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => {
+        initWidgetService()
 
-    // Request notification permission after a short delay
-    setTimeout(async () => {
-      const granted = await requestNotificationPermission()
-      notificationsEnabled = granted
-      if (granted) {
-        // Schedule class notifications
-        if ($todayClasses.length > 0) {
-          scheduleClassNotifications($todayClasses)
-        }
-
-        // Schedule event notifications
-        if ($upcomingEvents.length > 0) {
-          scheduleEventNotifications($upcomingEvents)
-        }
-
-        // Schedule daily summary (7 AM every day)
-        scheduleDailySummary($todayClasses, $upcomingEvents)
-      }
-    }, 2000)
+        // Request notification permission after idle
+        setTimeout(async () => {
+          const granted = await requestNotificationPermission()
+          notificationsEnabled = granted
+          if (granted) {
+            if ($todayClasses.length > 0) {
+              scheduleClassNotifications($todayClasses)
+            }
+            if ($upcomingEvents.length > 0) {
+              scheduleEventNotifications($upcomingEvents)
+            }
+            scheduleDailySummary($todayClasses, $upcomingEvents)
+          }
+        }, 3000)
+      })
+    } else {
+      // Fallback for browsers without requestIdleCallback
+      setTimeout(() => {
+        initWidgetService()
+        setTimeout(async () => {
+          const granted = await requestNotificationPermission()
+          notificationsEnabled = granted
+          if (granted) {
+            if ($todayClasses.length > 0) {
+              scheduleClassNotifications($todayClasses)
+            }
+            if ($upcomingEvents.length > 0) {
+              scheduleEventNotifications($upcomingEvents)
+            }
+            scheduleDailySummary($todayClasses, $upcomingEvents)
+          }
+        }, 3000)
+      }, 100)
+    }
 
     // Set up periodic refresh (every 15 minutes)
     const refreshInterval = setInterval(() => {
@@ -128,6 +147,9 @@
 </script>
 
 <ErrorBoundary>
+{#if $initialLoad}
+  <LoadingSkeleton />
+{:else}
 <div class="app min-h-screen p-3" style="background-color: {$currentTheme.bg};">
   <!-- Navigation Bar -->
   <div class="flex items-center justify-between mb-6 p-4 rounded-lg" style="background-color: {$currentTheme.card}; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);">
@@ -344,4 +366,8 @@
   .card-container:nth-child(2) { animation-delay: 0.2s; }
   .card-container:nth-child(3) { animation-delay: 0.3s; }
 </style>
+{/if}
+
+<!-- Toast notifications -->
+<Toast />
 </ErrorBoundary>
