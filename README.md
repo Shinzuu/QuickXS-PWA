@@ -1,9 +1,9 @@
 # QuickXS PWA - Student Schedule Manager
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/7b8e79cd-8eff-403a-a77a-4e1e12b76b65/deploy-status)](https://app.netlify.com/projects/puic/deploys)
 [![Build Check](https://github.com/Shinzuu/QuickXS-PWA/actions/workflows/build-check.yml/badge.svg)](https://github.com/Shinzuu/QuickXS-PWA/actions/workflows/build-check.yml)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/Shinzuu/QuickXS-PWA)
 
-**Live App**: [https://puic.netlify.app](https://puic.netlify.app)
+**Live App**: [https://quickxs.not-shinzuu.workers.dev](https://quickxs.not-shinzuu.workers.dev)
 
 A modern Progressive Web App for managing class schedules, events, and study resources.
 
@@ -62,15 +62,16 @@ Full guide: [TWA_BUILD_GUIDE.md](./TWA_BUILD_GUIDE.md)
 - **Build**: Vite
 - **Styling**: TailwindCSS
 - **Database**: Supabase (PostgreSQL)
-- **Deployment**: Netlify (auto-deploy)
+- **Deployment**: Cloudflare Workers (unlimited builds, auto-deploy)
 - **PWA**: Vite PWA Plugin
 
 ## 📊 Build Status
 
-The project includes automated build checks on every push. If a build fails, you'll see it in:
-- GitHub Actions tab (red X)
-- Build badge above (will show "failing")
-- Netlify deploy status
+The project includes automated build checks and deployments on every push:
+- ✅ Cloudflare Workers auto-deploy from `main` branch
+- ✅ Unlimited builds (no more build minute limits!)
+- ✅ GitHub Actions build validation
+- ✅ Global CDN with unlimited bandwidth
 
 Build size: ~80KB gzipped ⭐
 
@@ -106,8 +107,8 @@ MIT License - see LICENSE file for details
 
 ## 🔗 Links
 
-- **Live App**: https://puic.netlify.app
-- **Admin Panel**: https://puic.netlify.app/admin
+- **Live App**: https://quickxs.not-shinzuu.workers.dev
+- **Admin Panel**: https://quickxs.not-shinzuu.workers.dev/admin
 - **GitHub**: https://github.com/Shinzuu/QuickXS-PWA
 - **Issues**: https://github.com/Shinzuu/QuickXS-PWA/issues
 
