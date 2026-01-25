@@ -25,6 +25,10 @@
   let showEditModal = $state(null)
   let showTemplatesModal = $state(false)
 
+  // Loading states
+  let isSubmitting = $state(false)
+  let isDeletingId = $state(null)
+
   // Form
   let eventForm = $state({
     name: '',
@@ -270,9 +274,78 @@
     return () => window.removeEventListener('keydown', handleKeydown)
   }
 
+  // ========== FORM VALIDATION ==========
+
+  function validateForm(isEdit = false) {
+    const errors = []
+
+    // Validate name
+    if (!eventForm.name || eventForm.name.trim().length === 0) {
+      errors.push('Event name is required')
+    } else if (eventForm.name.trim().length < 3) {
+      errors.push('Event name must be at least 3 characters')
+    } else if (eventForm.name.trim().length > 200) {
+      errors.push('Event name must be less than 200 characters')
+    }
+
+    // Validate date
+    if (!eventForm.date) {
+      errors.push('Date is required')
+    } else {
+      const eventDate = new Date(eventForm.date)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+
+      if (isNaN(eventDate.getTime())) {
+        errors.push('Invalid date format')
+      } else if (!isEdit && eventDate < today) {
+        errors.push('Date cannot be in the past')
+      }
+    }
+
+    // Validate time
+    if (!eventForm.time) {
+      errors.push('Time is required')
+    } else {
+      const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/
+      if (!timeRegex.test(eventForm.time)) {
+        errors.push('Invalid time format (use HH:MM)')
+      }
+    }
+
+    // Validate event type
+    if (!eventForm.event_type) {
+      errors.push('Event type is required')
+    } else if (!eventTypes.includes(eventForm.event_type)) {
+      errors.push('Invalid event type')
+    }
+
+    // Validate priority
+    if (!eventForm.priority) {
+      errors.push('Priority is required')
+    } else if (!priorities.includes(eventForm.priority)) {
+      errors.push('Invalid priority level')
+    }
+
+    // Validate info (optional but limit length)
+    if (eventForm.info && eventForm.info.length > 1000) {
+      errors.push('Additional info must be less than 1000 characters')
+    }
+
+    return errors
+  }
+
   // ========== CRUD OPERATIONS ==========
 
   async function handleAdd() {
+    // Validate form
+    const errors = validateForm(false)
+    if (errors.length > 0) {
+      showToast('❌ Validation failed:\n' + errors.join('\n'), 'error')
+      return
+    }
+
+    isSubmitting = true
     try {
       const { data, error } = await supabase
         .from('events')
@@ -286,13 +359,23 @@
       showAddModal = false
       resetForm()
       clearDraft()
-      showToast('✅ Event added!', 'success')
+      showToast('✅ Event added successfully!', 'success')
     } catch (err) {
-      showToast('❌ ' + err.message, 'error')
+      showToast('❌ Failed to add event: ' + err.message, 'error')
+    } finally {
+      isSubmitting = false
     }
   }
 
   async function handleUpdate() {
+    // Validate form
+    const errors = validateForm(true)
+    if (errors.length > 0) {
+      showToast('❌ Validation failed:\n' + errors.join('\n'), 'error')
+      return
+    }
+
+    isSubmitting = true
     try {
       const oldEvent = $events.find(e => e.id === showEditModal)
 
@@ -319,9 +402,11 @@
       await fetchAllData(true)
       showEditModal = null
       resetForm()
-      showToast('✅ Event updated!', 'success')
+      showToast('✅ Event updated successfully!', 'success')
     } catch (err) {
-      showToast('❌ ' + err.message, 'error')
+      showToast('❌ Failed to update event: ' + err.message, 'error')
+    } finally {
+      isSubmitting = false
     }
   }
 
@@ -329,6 +414,7 @@
     const event = $events.find(e => e.id === id)
     if (!event) return
 
+    isDeletingId = id
     try {
       const { error } = await supabase
         .from('events')
@@ -341,14 +427,16 @@
       await fetchAllData(true)
 
       if (showUndo) {
-        showToast('🗑️ Event deleted', 'success', async () => {
+        showToast('🗑️ Event deleted successfully', 'success', async () => {
           await undo()
         }, 'Undo')
       } else {
-        showToast('🗑️ Event deleted', 'success')
+        showToast('🗑️ Event deleted successfully', 'success')
       }
     } catch (err) {
-      showToast('❌ ' + err.message, 'error')
+      showToast('❌ Failed to delete event: ' + err.message, 'error')
+    } finally {
+      isDeletingId = null
     }
   }
 

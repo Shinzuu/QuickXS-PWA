@@ -15,6 +15,8 @@
   import InstallPrompt from './components/InstallPrompt.svelte'
   import UpdatePrompt from './components/UpdatePrompt.svelte'
   import NotificationSettings from './components/NotificationSettings.svelte'
+  import GlobalSearch from './components/GlobalSearch.svelte'
+  import UserSettings from './components/UserSettings.svelte'
 
   // Lazy load heavy components (only loaded when needed)
   const EventsArchive = import('./components/EventsArchive.svelte')
@@ -230,6 +232,7 @@
       >
         🔧
       </button>
+      <UserSettings />
     </div>
   </div>
 
@@ -348,6 +351,9 @@
 
   <!-- PWA Update Prompt -->
   <UpdatePrompt />
+
+  <!-- Global Search -->
+  <GlobalSearch />
 </div>
 
 <style>
