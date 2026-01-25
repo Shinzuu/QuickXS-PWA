@@ -23,6 +23,7 @@
   })
 
   let hasShownUpdateNotice = false
+  let isUpdating = false
 
   // Show offline ready notification
   $: if ($offlineReady && !hasShownUpdateNotice) {
@@ -31,7 +32,8 @@
   }
 
   // Auto-update when new version is available
-  $: if ($needRefresh) {
+  $: if ($needRefresh && !isUpdating) {
+    isUpdating = true
     console.log('New version detected! Auto-updating...')
     toasts.add('New version available! Updating now...', 'info', '🔄 Updating', 2000)
     setTimeout(async () => {

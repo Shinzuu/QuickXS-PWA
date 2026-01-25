@@ -3,6 +3,7 @@
   import { routines } from '../lib/store'
   import { getCurrentDay, getWeekDays, formatTime, isClassHappeningNow } from '../lib/utils'
   import { getSubjectColor, getLabColor } from '../lib/classColors'
+  import { currentTheme } from '../lib/themeStore'
 
   let touchStartX = 0
   let touchEndX = 0
@@ -164,13 +165,13 @@
       </thead>
       <tbody>
         {#each getWeekDays() as day, dayIndex}
-          <tr style="background-color: {dayIndex % 2 === 0 ? 'var(--color-bg)' : '#2a2f38'};">
+          <tr style="background-color: {dayIndex % 2 === 0 ? $currentTheme.bg : $currentTheme.card};">
             <td
               class="p-3 text-sm font-bold sticky left-0 z-[5]"
               style="
-                background-color: {dayIndex % 2 === 0 ? 'var(--color-bg)' : '#2a2f38'};
-                color: {day === getCurrentDay() ? 'var(--color-accent)' : 'var(--color-text)'};
-                border: 2px solid {day === getCurrentDay() ? 'var(--color-accent)' : 'var(--color-card)'};
+                background-color: {dayIndex % 2 === 0 ? $currentTheme.bg : $currentTheme.card};
+                color: {day === getCurrentDay() ? $currentTheme.accent : $currentTheme.text};
+                border: 2px solid {day === getCurrentDay() ? $currentTheme.accent : $currentTheme.card};
                 font-size: 0.875rem;
               "
             >
@@ -225,9 +226,9 @@
                   <td
                     class="p-2 text-center text-xs"
                     style="
-                      background-color: {isBreak ? '#1a3a1a' : 'transparent'};
-                      border: 1px solid var(--color-card);
-                      color: var(--color-text);
+                      background-color: {isBreak ? $currentTheme.bg : 'transparent'};
+                      border: 1px solid {$currentTheme.card};
+                      color: {$currentTheme.text};
                       opacity: {isBreak ? '0.6' : '0.3'};
                     "
                   >
@@ -249,7 +250,7 @@
   <!-- Mobile View - Unified Timeline -->
   <div class="md:hidden">
     <!-- Day Selector (Sticky) -->
-    <div class="sticky top-0 z-[5] -mx-6 px-6 pb-3" style="background-color: var(--color-card); border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+    <div class="sticky top-0 z-[5] -mx-6 px-6 pb-3" style="background-color: {$currentTheme.card}; border-bottom: 1px solid {$currentTheme.bg};">
       <div class="flex overflow-x-auto gap-2 pb-2" style="-webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory;">
         {#each getWeekDays() as day}
           {@const isToday = day === getCurrentDay()}
@@ -295,11 +296,11 @@
           </div>
 
           {#if dayClasses.length === 0}
-            <div class="text-center py-8 px-4 rounded-lg" style="background-color: var(--color-bg); border: 2px dashed var(--color-card);">
-              <div class="inline-block p-4 rounded-full mb-3" style="background-color: rgba(0, 173, 181, 0.05);">
+            <div class="text-center py-8 px-4 rounded-lg" style="background-color: {$currentTheme.bg}; border: 2px dashed {$currentTheme.card};">
+              <div class="inline-block p-4 rounded-full mb-3" style="background-color: {$currentTheme.card};">
                 <span class="text-4xl">🌴</span>
               </div>
-              <p class="text-sm font-semibold" style="color: var(--color-text); opacity: 0.5;">No classes scheduled</p>
+              <p class="text-sm font-semibold" style="color: {$currentTheme.text}; opacity: 0.5;">No classes scheduled</p>
             </div>
           {:else}
             <!-- Timeline -->
@@ -381,20 +382,20 @@
   <!-- Legend -->
   <div class="hidden md:flex flex-wrap gap-4 mt-4 text-sm">
     <div class="flex items-center gap-2">
-      <div class="w-4 h-4 rounded" style="background-color: #2d4059; border: 2px solid var(--color-accent);"></div>
-      <span style="color: var(--color-text); opacity: 0.8;">Regular Class</span>
+      <div class="w-4 h-4 rounded" style="background-color: {$currentTheme.card}; border: 2px solid {$currentTheme.accent};"></div>
+      <span style="color: {$currentTheme.text}; opacity: 0.8;">Regular Class</span>
     </div>
     <div class="flex items-center gap-2">
-      <div class="w-4 h-4 rounded" style="background-color: #1a5f7a; border: 2px solid var(--color-accent);"></div>
-      <span style="color: var(--color-text); opacity: 0.8;">Lab Class</span>
+      <div class="w-4 h-4 rounded" style="background-color: {$currentTheme.bg}; border: 2px solid {$currentTheme.accent};"></div>
+      <span style="color: {$currentTheme.text}; opacity: 0.8;">Lab Class</span>
     </div>
     <div class="flex items-center gap-2">
-      <div class="w-4 h-4 rounded" style="background-color: var(--color-accent);"></div>
-      <span style="color: var(--color-text); opacity: 0.8;">Current Class</span>
+      <div class="w-4 h-4 rounded" style="background-color: {$currentTheme.accent};"></div>
+      <span style="color: {$currentTheme.text}; opacity: 0.8;">Current Class</span>
     </div>
     <div class="flex items-center gap-2">
-      <div class="w-4 h-4 rounded" style="background-color: #1a3a1a;"></div>
-      <span style="color: var(--color-text); opacity: 0.8;">Break Time</span>
+      <div class="w-4 h-4 rounded" style="background-color: {$currentTheme.bg}; opacity: 0.6;"></div>
+      <span style="color: {$currentTheme.text}; opacity: 0.8;">Break Time</span>
     </div>
   </div>
 </div>
