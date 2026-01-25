@@ -27,7 +27,7 @@
         </div>
 
         <!-- Tab Navigation -->
-        <div class="flex gap-2">
+        <div class="flex gap-2 items-center flex-wrap">
           {#each tabs as tab}
             <button
               onclick={() => activeTab = tab.id}

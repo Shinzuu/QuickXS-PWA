@@ -159,6 +159,19 @@
     <div class="flex gap-2 flex-wrap">
       <button
         onclick={() => {
+          showCalendar = false
+          showEventsArchive = false
+          showStatistics = false
+          showAdminPanel = false
+        }}
+        class="px-3 py-2 rounded-lg font-semibold transition-all hover:opacity-90"
+        style="background-color: {!showCalendar && !showEventsArchive && !showStatistics && !showAdminPanel ? $currentTheme.accent : $currentTheme.bg}; color: {!showCalendar && !showEventsArchive && !showStatistics && !showAdminPanel ? $currentTheme.bg : $currentTheme.accent}; border: 2px solid {$currentTheme.accent};"
+        title="Home"
+      >
+        🏠
+      </button>
+      <button
+        onclick={() => {
           showCalendar = !showCalendar
           if (showCalendar) {
             showAdminPanel = false

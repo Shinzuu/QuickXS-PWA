@@ -10,8 +10,15 @@
   let loading = $state(true)
   let loggingIn = $state(false)
   let user = $state(null)
+  let rememberMe = $state(true)
 
   onMount(async () => {
+    // Load saved email if it exists
+    const savedEmail = localStorage.getItem('adminEmail')
+    if (savedEmail) {
+      email = savedEmail
+    }
+
     // Check if user is already logged in
     const { data: { session } } = await supabase.auth.getSession()
 
@@ -51,6 +58,13 @@
 
       if (authError) throw authError
 
+      // Save email if remember me is checked
+      if (rememberMe) {
+        localStorage.setItem('adminEmail', email)
+      } else {
+        localStorage.removeItem('adminEmail')
+      }
+
       isAuthenticated = true
       user = data.user
       password = '' // Clear password
@@ -73,6 +87,7 @@
       console.error('Logout error:', err)
     }
   }
+
 </script>
 
 {#if loading}
@@ -118,7 +133,7 @@
           />
         </div>
 
-        <div class="mb-6">
+        <div class="mb-4">
           <label for="password" class="block text-sm font-semibold mb-2" style="color: var(--color-text);">
             Password
           </label>
@@ -136,6 +151,20 @@
             "
             placeholder="••••••••"
           />
+        </div>
+
+        <div class="mb-6 flex items-center">
+          <input
+            id="remember-me"
+            type="checkbox"
+            bind:checked={rememberMe}
+            disabled={loggingIn}
+            class="w-4 h-4 rounded border-2 transition-all focus:outline-none cursor-pointer"
+            style="accent-color: var(--color-accent);"
+          />
+          <label for="remember-me" class="ml-2 text-sm font-medium cursor-pointer" style="color: var(--color-text);">
+            Remember my email
+          </label>
         </div>
 
         <button
