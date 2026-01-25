@@ -40,20 +40,19 @@ export function scheduleClassNotifications(classes) {
     const [hour, min] = classItem.time.split(':').map(Number)
     const classTime = hour * 60 + min
 
-    // Schedule notifications based on custom timings
-    settings.timings.forEach((minutesBefore) => {
-      const notifyTime = classTime - minutesBefore
-      const timeUntilNotify = (notifyTime - currentTime) * 60 * 1000
+    // Schedule notification based on classReminderMinutes setting
+    const minutesBefore = settings.classReminderMinutes || 5
+    const notifyTime = classTime - minutesBefore
+    const timeUntilNotify = (notifyTime - currentTime) * 60 * 1000
 
-      // Only schedule if the notification time is in the future and within the next 12 hours
-      if (timeUntilNotify > 0 && timeUntilNotify < 12 * 60 * 60 * 1000) {
-        const timeoutId = setTimeout(() => {
-          showClassNotification(classItem, minutesBefore)
-        }, timeUntilNotify)
+    // Only schedule if the notification time is in the future and within the next 12 hours
+    if (timeUntilNotify > 0 && timeUntilNotify < 12 * 60 * 60 * 1000) {
+      const timeoutId = setTimeout(() => {
+        showClassNotification(classItem, minutesBefore)
+      }, timeUntilNotify)
 
-        scheduledNotifications.set(`${classItem.id}-${minutesBefore}min`, timeoutId)
-      }
-    })
+      scheduledNotifications.set(`${classItem.id}-${minutesBefore}min`, timeoutId)
+    }
   })
 }
 
@@ -107,6 +106,7 @@ export function clearAllNotifications() {
 export function scheduleEventNotifications(events) {
   if (notificationPermission !== 'granted') return
 
+  const settings = get(notificationSettings)
   const now = new Date()
 
   events.forEach(event => {
@@ -115,25 +115,32 @@ export function scheduleEventNotifications(events) {
     const eventDate = new Date(event.date + 'T' + event.time)
     const msUntilEvent = eventDate.getTime() - now.getTime()
 
-    // Notification timings for events
-    const eventNotificationTimings = [
-      { time: 24 * 60 * 60 * 1000, label: '1 day' },      // 1 day before
-      { time: 3 * 60 * 60 * 1000, label: '3 hours' },     // 3 hours before
-      { time: 30 * 60 * 1000, label: '30 minutes' }       // 30 minutes before
-    ]
+    // Use user-configured event reminder time
+    const reminderMinutes = settings.eventReminderMinutes || 1440 // Default 1 day
+    const reminderMs = reminderMinutes * 60 * 1000
 
-    eventNotificationTimings.forEach(({ time, label }) => {
-      const notifyTime = msUntilEvent - time
+    // Format label based on time
+    let label
+    if (reminderMinutes >= 1440) {
+      const days = Math.floor(reminderMinutes / 1440)
+      label = `${days} day${days > 1 ? 's' : ''}`
+    } else if (reminderMinutes >= 60) {
+      const hours = Math.floor(reminderMinutes / 60)
+      label = `${hours} hour${hours > 1 ? 's' : ''}`
+    } else {
+      label = `${reminderMinutes} minute${reminderMinutes > 1 ? 's' : ''}`
+    }
 
-      // Only schedule if in the future and within next 7 days
-      if (notifyTime > 0 && notifyTime < 7 * 24 * 60 * 60 * 1000) {
-        const timeoutId = setTimeout(() => {
-          showEventNotification(event, label)
-        }, notifyTime)
+    const notifyTime = msUntilEvent - reminderMs
 
-        scheduledNotifications.set(`event-${event.id}-${label}`, timeoutId)
-      }
-    })
+    // Only schedule if in the future and within next 7 days
+    if (notifyTime > 0 && notifyTime < 7 * 24 * 60 * 60 * 1000) {
+      const timeoutId = setTimeout(() => {
+        showEventNotification(event, label)
+      }, notifyTime)
+
+      scheduledNotifications.set(`event-${event.id}-${label}`, timeoutId)
+    }
 
     // On the day notification (morning)
     const eventDayMorning = new Date(event.date + 'T08:00:00')
