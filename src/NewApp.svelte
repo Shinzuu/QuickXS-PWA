@@ -88,21 +88,8 @@
       }, 100)
     }
 
-    // Set up periodic refresh (every 15 minutes)
-    const refreshInterval = setInterval(() => {
-      if (!document.hidden && navigator.onLine) {
-        fetchAllData()
-      }
-    }, 15 * 60 * 1000)
-
-    // Refresh when tab becomes visible
-    const handleVisibilityChange = () => {
-      if (!document.hidden && navigator.onLine) {
-        fetchAllData()
-      }
-    }
-
-    document.addEventListener('visibilitychange', handleVisibilityChange)
+    // Periodic refresh and auto-refresh disabled to prevent app breaking
+    // Users can manually refresh using pull-to-refresh
 
     // Pull-to-refresh setup
     let startY = 0
@@ -142,8 +129,6 @@
     document.addEventListener('touchend', handleTouchEnd)
 
     return () => {
-      clearInterval(refreshInterval)
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
       document.removeEventListener('touchstart', handleTouchStart)
       document.removeEventListener('touchmove', handleTouchMove)
       document.removeEventListener('touchend', handleTouchEnd)

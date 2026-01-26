@@ -175,7 +175,8 @@ export async function loadCachedData() {
 if (typeof window !== 'undefined') {
   window.addEventListener('online', () => {
     isOffline.set(false)
-    fetchAllData() // Auto-refresh when back online
+    // Auto-refresh disabled to prevent app breaking
+    // User can manually refresh using pull-to-refresh
   })
 
   window.addEventListener('offline', () => {

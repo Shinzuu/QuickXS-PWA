@@ -9,11 +9,7 @@
   } = useRegisterSW({
     onRegistered(r) {
       console.log('SW Registered:', r)
-      // Check for updates every 30 minutes for faster detection
-      setInterval(() => {
-        console.log('Checking for updates...')
-        r?.update()
-      }, 30 * 60 * 1000)
+      // Auto-update check disabled to prevent app breaking
     },
     onRegisterError(error) {
       console.error('SW registration error', error)
@@ -32,20 +28,13 @@
     }
   })
 
-  // Auto-update when new version is available (runs once)
+  // Auto-update disabled to prevent app breaking
+  // User can manually refresh the page when they want to update
   $effect(() => {
     if ($needRefresh && !hasStartedUpdate) {
       hasStartedUpdate = true
-      console.log('New version detected! Auto-updating...')
-      toasts.add('New version available! Updating now...', 'info', '🔄 Updating', 2000)
-
-      setTimeout(async () => {
-        await updateServiceWorker(true)
-        toasts.add('Update complete! Reloading...', 'success', '✅ Updated', 1000)
-        setTimeout(() => {
-          window.location.reload()
-        }, 1000)
-      }, 500)
+      console.log('New version available (auto-update disabled)')
+      toasts.add('New version available! Refresh page to update.', 'info', 'ℹ️ Update Available', 5000)
     }
   })
 </script>
