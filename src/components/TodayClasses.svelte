@@ -410,4 +410,12 @@
   .pulse-soon {
     animation: pulseSoon 3s ease-in-out infinite;
   }
+
+  /* Battery Optimization: Disable infinite animations when user prefers reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .pulse-now,
+    .pulse-soon {
+      animation: none !important;
+    }
+  }
 </style>

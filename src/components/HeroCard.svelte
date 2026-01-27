@@ -25,14 +25,46 @@
     return '🌙 Good Night'
   }
 
-  // Update every minute
+  // Update every minute, but pause when tab is hidden to save battery
   onMount(() => {
     greeting = getGreeting()
     updateHighlight()
-    timer = setInterval(() => {
-      greeting = getGreeting()
-      updateHighlight()
-    }, 60000) // Update every minute
+
+    const startTimer = () => {
+      timer = setInterval(() => {
+        greeting = getGreeting()
+        updateHighlight()
+      }, 60000) // Update every minute
+    }
+
+    const stopTimer = () => {
+      if (timer) {
+        clearInterval(timer)
+        timer = null
+      }
+    }
+
+    // Start timer initially
+    startTimer()
+
+    // Pause timer when tab is hidden (battery optimization)
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopTimer()
+      } else {
+        // Update immediately when tab becomes visible
+        greeting = getGreeting()
+        updateHighlight()
+        startTimer()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      stopTimer()
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
   })
 
   onDestroy(() => {
@@ -325,5 +357,12 @@
 
   .pulse-hero {
     animation: pulseHero 2.5s ease-in-out infinite;
+  }
+
+  /* Battery Optimization: Disable infinite animations when user prefers reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .pulse-hero {
+      animation: none !important;
+    }
   }
 </style>

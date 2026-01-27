@@ -56,4 +56,11 @@
       opacity: 1;
     }
   }
+
+  /* Battery Optimization: Disable infinite shimmer when user prefers reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .skeleton-shimmer {
+      animation: none !important;
+    }
+  }
 </style>

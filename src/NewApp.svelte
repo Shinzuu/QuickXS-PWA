@@ -3,7 +3,7 @@
   import { loadCachedData, fetchAllData, isLoading, initialLoad, todayClasses, upcomingEvents, events } from './lib/store'
   import { requestNotificationPermission, scheduleClassNotifications, scheduleEventNotifications, scheduleDailySummary } from './lib/notifications'
   import { currentTheme } from './lib/themeStore'
-  import { initWidgetService } from './lib/widgetService'
+  // import { initWidgetService } from './lib/widgetService' // Disabled for battery optimization
   import ErrorBoundary from './components/ErrorBoundary.svelte'
   import LoadingSkeleton from './components/LoadingSkeleton.svelte'
   import Toast from './components/Toast.svelte'
@@ -50,7 +50,7 @@
     // Defer non-critical tasks to when browser is idle
     if ('requestIdleCallback' in window) {
       requestIdleCallback(() => {
-        initWidgetService()
+        // initWidgetService() // Disabled for battery optimization - experimental feature not widely used
 
         // Request notification permission after idle
         setTimeout(async () => {
@@ -70,7 +70,7 @@
     } else {
       // Fallback for browsers without requestIdleCallback
       setTimeout(() => {
-        initWidgetService()
+        // initWidgetService() // Disabled for battery optimization - experimental feature not widely used
         setTimeout(async () => {
           const granted = await requestNotificationPermission()
           notificationsEnabled = granted
@@ -495,6 +495,20 @@
   .card-container:nth-child(3) { animation-delay: 0.15s; }
   .card-container:nth-child(4) { animation-delay: 0.2s; }
   .card-container:nth-child(5) { animation-delay: 0.25s; }
+
+  /* === Battery Optimization: Disable infinite animations when user prefers reduced motion === */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-pulse,
+    .animate-spin {
+      animation: none !important;
+    }
+
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 
   /* === Button Effects === */
   button {

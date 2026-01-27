@@ -405,6 +405,13 @@
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
+  /* Battery Optimization: Disable infinite animations when user prefers reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-pulse {
+      animation: none !important;
+    }
+  }
+
   table {
     border-spacing: 0;
   }

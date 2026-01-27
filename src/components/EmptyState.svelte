@@ -53,4 +53,11 @@
       transform: translateY(0);
     }
   }
+
+  /* Battery Optimization: Disable infinite bounce when user prefers reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-bounce-slow {
+      animation: none !important;
+    }
+  }
 </style>
