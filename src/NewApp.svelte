@@ -13,7 +13,6 @@
   import OfflineIndicator from './components/OfflineIndicator.svelte'
   import WeeklyRoutineTable from './components/WeeklyRoutineTable.svelte'
   import InstallPrompt from './components/InstallPrompt.svelte'
-  import UpdatePrompt from './components/UpdatePrompt.svelte'
   import NotificationSettings from './components/NotificationSettings.svelte'
   import GlobalSearch from './components/GlobalSearch.svelte'
   import UserSettings from './components/UserSettings.svelte'
@@ -364,9 +363,6 @@
 
   <!-- PWA Install Prompt -->
   <InstallPrompt />
-
-  <!-- PWA Update Prompt -->
-  <UpdatePrompt />
 
   <!-- Global Search -->
   <GlobalSearch bind:this={globalSearchComponent} />
